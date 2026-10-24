@@ -88,6 +88,12 @@ body { background: var(--bg); color: var(--ink); font-family: var(--font); font-
 .mode-card .mc-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 20px 18px; }
 .ev { font-size: .75rem; font-weight: 500; padding: 4px 10px; border-radius: 999px; background: var(--sunken); color: var(--muted); }
 .mode-card .go { font-weight: 600; font-size: .9rem; white-space: nowrap; }
+@media (max-width: 679px) {
+  .mode-card .art { height: 56px; }
+  .mode-card .mc-body { padding: 14px 18px 0; gap: 4px; }
+  .mode-card .mc-foot { padding: 12px 18px 14px; }
+  .mode-card h2 { font-size: 1.2rem; }
+}
 .ganz-art { background: linear-gradient(110deg, #e2483a, #ef8a3c 30%, #d9483d 50%, #8c4fc4 72%, #4b6ee0); filter: saturate(.8); }
 
 /* ---------- 2. сеанс ---------- */
@@ -150,6 +156,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--font); font-
 
 /* ---------- панель параметров ---------- */
 .panel { display: grid; gap: 22px; min-width: 0; align-content: start; }
+.panel > * { min-width: 0; }  /* сводка настроек в одну строку не должна распирать колонку */
 .group { display: grid; gap: 10px; }
 .group-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .group-h h3, .group-h label { margin: 0; font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
@@ -260,10 +267,11 @@ details.settings[open] > summary::after { rotate: 225deg; translate: 0 2px; }
 .about { display: grid; gap: 14px; }
 .sum-cards { display: grid; gap: 10px; }
 @media (min-width: 680px) { .sum-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.sum-card { display: grid; gap: 8px; align-content: start; padding: 18px; border-radius: 18px; background: var(--surface); }
+.sum-card { display: grid; gap: 8px; grid-template-rows: auto auto 1fr auto; align-content: start; padding: 18px; border-radius: 18px; background: var(--surface); }
 .sum-card h3 { margin: 0; font-size: 1.05rem; font-weight: 600; }
 .sum-card p { margin: 0; font-size: .9rem; color: var(--muted); }
-.sum-card dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; font-size: .85rem; }
+.sum-card .more { align-self: end; }
+.sum-card dl { margin: 0; align-self: start; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; font-size: .85rem; }
 .sum-card dt { color: var(--faint); }
 .sum-card dd { margin: 0; }
 .doc { display: grid; gap: 28px; background: var(--surface); border-radius: var(--radius); padding: clamp(20px, 4vw, 40px); }
@@ -699,7 +707,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
       <div class="sum-card">
         <h3>Фокус</h3>
         <p>Тоны чуть разной частоты в левом и правом ухе. Мозг слышит между ними третий, пульсирующий ритм.</p>
-        <dl><dt>Доказано</dt><dd>метаанализ 22 исследований: средний эффект; исследования малые</dd><dt>Для чего</dt><dd>память, внимание, тревога перед событием</dd></dl>
+        <dl><dt>Доказано</dt><dd>средний эффект в метаанализе; исследования малые</dd><dt>Для чего</dt><dd>память, внимание, тревога перед событием</dd></dl>
         <button class="more" data-goto="about-focus">Подробнее →</button>
       </div>
     </div>
@@ -875,7 +883,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   const MODES = {
     gamma: { title: 'Очистка', lead: 'Звук и свет 40 раз в секунду, как в протоколе MIT. Если станет нехорошо — переключитесь на уровень слабее.' },
     relax: { title: 'Отдых', lead: 'Дышите вслед за кругом. Биения в ритме мозговых волн звучат фоном.' },
-    focus: { title: 'Фокус', lead: 'Наденьте наушники, сядьте удобно, закройте глаза. Послушайте 10 минут и сразу переходите к делу.' },
+    focus: { title: 'Фокус', lead: 'Наденьте наушники, сядьте удобно, закройте глаза. Дослушайте до конца и сразу переходите к делу.' },
     ganz:  { title: 'Видения', lead: 'Затемните комнату и лягте. Держите телефон в 15–20 см над лицом, глаза полуприкрыты. Смотрите в цвет и ничего не ищите — картины придут сами.' },
   };
 
@@ -1154,7 +1162,8 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   }
 
   // Пока звук не нужен, усыпляем аудио: телефон не тратит батарею на тишину.
-  function idleAudio() { setTimeout(() => { if (ctx && !live.length && ctx.state === 'running') ctx.suspend().catch(() => {}); }, 300); }
+  let idleT = 0, earBusy = 0;
+  function idleAudio() { clearTimeout(idleT); idleT = setTimeout(() => { if (ctx && !live.length && !earBusy && ctx.state === 'running') ctx.suspend().catch(() => {}); }, 300); }
 
   const elapsed = () => {
     if (!S.running) return 0;
@@ -1170,10 +1179,11 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     if (S.mode === 'relax') Object.assign(s, { rkind: S.rkind, binaural: S.binaural });
     if (S.mode === 'ganz') Object.assign(s, { gprog: S.gprog, gnoise: S.gnoise });
     if (S.mode === 'focus') s.fkind = S.fkind;
-    if (S.paused) s.pausedAt = S.pausedAt;
     return s;
   };
-  const saveCurrent = () => store.set('g40.current', snapshot());
+  // У каждого сеанса свой ключ — две вкладки не затирают друг друга.
+  const curKey = () => 'g40.current.' + S.startedISO;
+  const saveCurrent = () => store.set(curKey(), snapshot());
 
   function play() {
     const fresh = !S.running;
@@ -1205,7 +1215,6 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     S.base = Math.min(S.total, elapsed());
     stopAudio();
     S.paused = true;
-    S.pausedAt = Date.now();
     hideOverlays(); undim();
     idleAudio();
     unwake();
@@ -1221,8 +1230,9 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     hideOverlays(); undim();
     unwake();
     idleAudio();
-    store.del('g40.current');
+    store.del(curKey());
     S.lastId = snap.sec >= 5 ? logSession(Object.assign(snap, { done })) : null;
+    clearTimeout(backTimer); backArmed = false; $('#back').classList.remove('armed');
     S.running = false; S.paused = false; S.base = 0;
     doneShown = done;
     render();
@@ -1384,11 +1394,14 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     prog.style.strokeDashoffset = C * (1 - Math.min(1, e / total));
   }
 
+  let lastBeat = 0;
   setInterval(() => {
-    if (!S.running || S.paused) return;
+    if (!S.running) return;
+    // Отметка «вкладка жива» — и на паузе, чтобы другая вкладка не записала сеанс как брошенный.
+    if (Date.now() - lastBeat >= 5000) { lastBeat = Date.now(); saveCurrent(); }
+    if (S.paused) return;
     const e = elapsed();
     if (e >= S.total) return finish(true);
-    if (e - lastSaved >= 5) { lastSaved = e; saveCurrent(); }
     if (document.hidden) drawTime();
   }, 250);
 
@@ -1445,6 +1458,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     });
     $('#g10').nextElementSibling.textContent = '10 мин';
     $('#binaural').checked = prefs.binaural;
+    document.querySelectorAll('[data-ear]').forEach((b) => { b.disabled = active; });
     $('#breathe').checked = prefs.breathe;
     const lightEl = $('#light');
     lightEl.disabled = S.running || !lv().light;
@@ -1520,14 +1534,21 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   onPick('fdur', (v) => { prefs.fdur = +v; });
   // Проверка наушников: короткий тон только в одно ухо.
   document.querySelectorAll('[data-ear]').forEach((btn) => btn.addEventListener('click', async () => {
-    if (S.running) return;
-    ensureCtx(); await ctx.resume();
-    const o = ctx.createOscillator(), g = ctx.createGain(), pan = ctx.createStereoPanner(), t = ctx.currentTime + 0.02, v = Math.max(0.02, Math.pow(prefs.fvol / 100, 2) * 0.9);
-    o.frequency.value = 440; pan.pan.value = +btn.dataset.ear;
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + 0.05); g.gain.setValueAtTime(v, t + 0.6); g.gain.linearRampToValueAtTime(0, t + 0.7);
-    o.connect(g).connect(pan).connect(ctx.destination);
-    o.start(t); o.stop(t + 0.75);
-    o.onended = () => { pan.disconnect(); idleAudio(); };
+    if (S.running && !S.paused) return;
+    earBusy++; clearTimeout(idleT);
+    try {
+      ensureCtx();
+      // iOS во время звонка может не ответить на resume() никогда — не ждём дольше 1,5 с.
+      await Promise.race([ctx.resume(), new Promise((_, no) => setTimeout(no, 1500))]);
+      const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + 0.02, v = Math.max(0.02, Math.pow(prefs.fvol / 100, 2) * 0.9);
+      // Тон только в один канал: через сплиттер-сумматор, работает и в старом Safari без StereoPanner.
+      const merge = ctx.createChannelMerger(2);
+      o.frequency.value = 440;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + 0.05); g.gain.setValueAtTime(v, t + 0.6); g.gain.linearRampToValueAtTime(0, t + 0.7);
+      o.connect(g); g.connect(merge, 0, btn.dataset.ear === '1' ? 1 : 0); merge.connect(ctx.destination);
+      o.start(t); o.stop(t + 0.75);
+      o.onended = () => { merge.disconnect(); earBusy--; idleAudio(); };
+    } catch { earBusy = Math.max(0, earBusy - 1); }
   }));
   $('#binaural').addEventListener('change', (e) => { prefs.binaural = e.target.checked; summaries(); });
   $('#breathe').addEventListener('change', (e) => { prefs.breathe = e.target.checked; savePrefs(); render(); });
@@ -1646,9 +1667,13 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   const fmtDur = (sec) => sec < 60 ? `${sec} с` : `${Math.round(sec / 60)} мин`;
   const dayKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const sessions = () => store.get('g40.sessions', []);
+  // Один сеанс — одна запись: если его уже записала другая вкладка, обновляем её.
   function logSession(s) {
+    delete s.beat; delete s.closed; delete s.pausedAt;
+    const all = sessions(), old = all.find((x) => x.start === s.start);
+    if (old) { Object.assign(old, s, { id: old.id }); store.set('g40.sessions', all); return old.id; }
     s.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    const all = sessions(); all.push(s); store.set('g40.sessions', all.slice(-500));
+    all.push(s); store.set('g40.sessions', all.slice(-500));
     return s.id;
   }
   function updateSession(id, patch) {
@@ -1661,11 +1686,15 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   // Сеанс, оборванный закрытием вкладки, записывается как прерванный при следующем запуске.
-  const dangling = store.get('g40.current', null);
-  // Свежая отметка — сеанс ещё идёт в другой вкладке, не трогаем. Пауза тоже отметка, поэтому порог щедрый.
-  if (dangling && !(dangling.beat && Date.now() - dangling.beat < 15000 && !dangling.pausedAt)) {
-    if (dangling.sec >= 5 && !sessions().some((x) => x.start === dangling.start)) { delete dangling.beat; logSession(Object.assign(dangling, { done: false })); }
-    store.del('g40.current');
+  let curKeys = [];
+  try { curKeys = Object.keys(localStorage).filter((k) => k === 'g40.current' || k.startsWith('g40.current.')); } catch {}
+  for (const key of curKeys) {
+    const dangling = store.get(key, null);
+    // Свежая отметка — сеанс ещё идёт в другой вкладке, не трогаем.
+    if (dangling && (dangling.closed || !(dangling.beat && Date.now() - dangling.beat < 15000))) {
+      if (dangling.sec >= 5) logSession(Object.assign(dangling, { done: false }));
+      store.del(key);
+    }
   }
 
   function describe(s) {
@@ -1745,7 +1774,8 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     renderStats();
   });
 
-  window.addEventListener('pagehide', () => { if (S.running) saveCurrent(); });
+  // Вкладка закрывается — сеанс точно брошен, следующий запуск запишет его сразу.
+  window.addEventListener('pagehide', () => { if (S.running) store.set(curKey(), Object.assign(snapshot(), { closed: true })); });
 
   // ---------- старт ----------
   function wavePath(cycles, amp, w, h) {
