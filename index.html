@@ -21,6 +21,7 @@
   --g2: #8b93e6;   /* сумеречный синий */
   --g3: #e2a59a;   /* тёплый коралл */
   --g4: #d2b468;   /* приглушённое золото */
+  --g5: #c48fd0;   /* сирень */
   --good: #2b8a63;
   --warn: #b66a12;
   --bad: #c2414f;
@@ -30,14 +31,14 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0f1317; --surface: #171d23; --sunken: #0b0f12; --ink: #e9eef2; --muted: #9aa6b1; --faint: #6c7883;
-    --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f; --g4: #9c8441;
+    --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f; --g4: #9c8441; --g5: #8d5f9c;
     --good: #5cc497; --warn: #e5a556; --bad: #f07a86;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0f1317; --surface: #171d23; --sunken: #0b0f12; --ink: #e9eef2; --muted: #9aa6b1; --faint: #6c7883;
-  --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f; --g4: #9c8441;
+  --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f; --g4: #9c8441; --g5: #8d5f9c;
   --good: #5cc497; --warn: #e5a556; --bad: #f07a86;
   color-scheme: dark;
 }
@@ -92,6 +93,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--font); font-
   .mode-card .mc-foot { padding: 12px 18px 14px; }
   .mode-card h2 { font-size: 1.2rem; }
 }
+@media (min-width: 680px) { .modes > :last-child:nth-child(odd) { grid-column: 1 / -1; } }
 .ganz-art { background: linear-gradient(110deg, #e2483a, #ef8a3c 30%, #d9483d 50%, #8c4fc4 72%, #4b6ee0); filter: saturate(.8); }
 
 /* ---------- 2. сеанс ---------- */
@@ -388,6 +390,19 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
           </div>
           <div class="mc-foot"><span class="ev">метаанализ: средний эффект</span><span class="go">→</span></div>
         </button>
+        <button class="mode-card" data-mode="fls">
+          <svg class="art" viewBox="0 0 400 96" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="mgE" x1="0" x2="1"><stop offset="0" style="stop-color: var(--g5)"></stop><stop offset="1" style="stop-color: var(--g3)"></stop></linearGradient></defs>
+            <rect width="400" height="96" fill="url(#mgE)" opacity=".18"></rect>
+            <path id="waveFls" fill="none" stroke="url(#mgE)" stroke-width="2.5" stroke-linejoin="round"></path>
+          </svg>
+          <div class="mc-body">
+            <span class="mc-kicker">Мерцание 10 Гц</span>
+            <h2>Узоры</h2>
+            <p>Свет мигает сквозь закрытые веки, и через минуту мозг рисует цветные геометрические узоры. Не для эпилептиков.</p>
+          </div>
+          <div class="mc-foot"><span class="ev">яркие узоры · 2 исследования</span><span class="go">→</span></div>
+        </button>
       </div>
     </section>
 
@@ -615,6 +630,63 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
           </details>
         </div>
 
+        <!-- ===== Узоры ===== -->
+        <div class="panel" id="panel-fls" hidden>
+          <div class="group">
+            <div class="group-h"><h3>Ритм</h3></div>
+            <div class="levels" role="radiogroup" aria-label="Ритм">
+              <div class="level"><input type="radio" name="lprog" id="lp-r10" value="r10"><label for="lp-r10">
+                <span class="lv-top"><svg class="lv-wave" viewBox="0 0 30 16" aria-hidden="true"><path id="lw-r10"></path></svg><b>10 Гц</b></span>
+                <span class="sub">Самые яркие узоры</span>
+              </label></div>
+              <div class="level"><input type="radio" name="lprog" id="lp-r3" value="r3"><label for="lp-r3">
+                <span class="lv-top"><svg class="lv-wave" viewBox="0 0 30 16" aria-hidden="true"><path id="lw-r3"></path></svg><b>3 Гц</b></span>
+                <span class="sub">Медленнее и мягче</span>
+              </label></div>
+              <div class="level"><input type="radio" name="lprog" id="lp-a10" value="a10"><label for="lp-a10">
+                <span class="lv-top"><svg class="lv-wave" viewBox="0 0 30 16" aria-hidden="true"><path id="lw-a10"></path></svg><b>Без ритма</b></span>
+                <span class="sub">Те же 10 вспышек, но вразнобой. Сравните сами</span>
+              </label></div>
+            </div>
+            <p class="hint warn">Мерцание этой частоты может вызвать приступ при эпилепсии. Станет плохо — коснитесь экрана.</p>
+          </div>
+
+          <div class="group">
+            <div class="group-h"><h3>Цвет вспышки</h3></div>
+            <div class="chips" role="radiogroup" aria-label="Цвет вспышки">
+              <input type="radio" name="lcolor" id="lc-white" value="white"><label for="lc-white">Белый</label>
+              <input type="radio" name="lcolor" id="lc-red" value="red"><label for="lc-red">Красный</label>
+              <input type="radio" name="lcolor" id="lc-blue" value="blue"><label for="lc-blue">Синий</label>
+            </div>
+            <p class="hint">В исследованиях был белый. Цвета в узорах появляются и от него — мозг их додумывает.</p>
+          </div>
+
+          <ol class="steps">
+            <li>Сядьте или лягте, держите телефон экраном к лицу в 10–20 см.</li>
+            <li>Нажмите ▶ и сразу закройте глаза: свет разгорается 10 секунд и проходит сквозь веки.</li>
+          </ol>
+
+          <details class="settings" id="set-fls">
+            <summary><b>Настройки</b><span class="sum" id="sum-fls"></span></summary>
+            <div class="settings-body">
+              <div class="group">
+                <div class="group-h"><h3>Длительность</h3></div>
+                <div class="chips" role="radiogroup" aria-label="Длительность">
+                  <input type="radio" name="ldur" id="l3" value="3"><label for="l3">3 мин</label>
+                  <input type="radio" name="ldur" id="l5" value="5"><label for="l5">5</label>
+                  <input type="radio" name="ldur" id="l10" value="10"><label for="l10">10</label>
+                </div>
+                <p class="hint">В исследованиях хватало нескольких минут. Узоры приходят почти сразу.</p>
+              </div>
+              <div class="group">
+                <div class="group-h"><label for="lbright">Яркость вспышки</label><span class="val" id="lbright-val"></span></div>
+                <input type="range" id="lbright" min="10" max="100" step="1" value="60">
+                <p class="hint">Свет нарастает за 10 секунд. С закрытыми глазами хватает средней яркости.</p>
+              </div>
+            </div>
+          </details>
+        </div>
+
         <!-- ===== Фокус ===== -->
         <div class="panel" id="panel-focus" hidden>
           <div class="group">
@@ -674,7 +746,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     <div class="days-wrap">
       <p class="label-sm">Минуты по дням</p>
       <div class="days" id="days"></div>
-      <div class="legend"><span style="--c: var(--g2)">Очистка</span><span style="--c: var(--g1)">Отдых</span><span style="--c: var(--g3)">Видения</span><span style="--c: var(--g4)">Фокус</span></div>
+      <div class="legend"><span style="--c: var(--g2)">Очистка</span><span style="--c: var(--g1)">Отдых</span><span style="--c: var(--g3)">Видения</span><span style="--c: var(--g4)">Фокус</span><span style="--c: var(--g5)">Узоры</span></div>
     </div>
     <ul class="list" id="list"></ul>
     <p class="empty" id="empty">Пока пусто. Здесь будет каждый сеанс: режим, длительность, самочувствие и что вы видели.</p>
@@ -707,6 +779,12 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
         <p>Тоны чуть разной частоты в левом и правом ухе. Мозг слышит между ними третий, пульсирующий ритм.</p>
         <dl><dt>Доказано</dt><dd>средний эффект в метаанализе; исследования малые</dd><dt>Для чего</dt><dd>память, внимание, тревога перед событием</dd></dl>
         <button class="more" data-goto="about-focus">Подробнее →</button>
+      </div>
+      <div class="sum-card">
+        <h3>Узоры</h3>
+        <p>Ритмичные вспышки света на закрытые глаза. Зрительная кора входит в резонанс и показывает узоры, которых нет.</p>
+        <dl><dt>Доказано</dt><dd>2 исследования: сильнее всего на 10 Гц и только при ровном ритме</dd><dt>Для чего</dt><dd>необычный опыт, не лечение</dd></dl>
+        <button class="more" data-goto="about-fls">Подробнее →</button>
       </div>
     </div>
 
@@ -797,6 +875,21 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
         </div></details>
       </section>
 
+      <section id="about-fls">
+        <p class="label-sm">Узоры</p>
+        <h2>Мерцающий свет на закрытые глаза</h2>
+        <p class="lead">Если на закрытые веки светить вспышками несколько раз в секунду, зрительная кора начинает работать в этом ритме и рисует то, чего нет: решётки, спирали, соты, волны, яркие цвета. Это знали ещё в 1950-х — на этом построена «Дримашина» Брайона Гайсина.</p>
+        <p>В 2021 году в Берлине (Bartossek, Kemmerer, Schmidt) 24 человека смотрели закрытыми глазами на вспышки 3 и 10 Гц. На 10 Гц эффекты были сильнее: яркие простые видения, по силе сопоставимые с оценками после психоделиков. В 2023 году (Amaya и соавт.) сравнили 3, 8, 10 и 18 Гц: пик узоров — на 10 Гц. А если те же 10 вспышек в секунду идут вразнобой, эффект резко слабеет.</p>
+        <details><summary>Почему 10 Гц и зачем «без ритма»</summary><div>
+          <p>10 Гц — частота собственного альфа-ритма зрительной коры. Ритмичная вспышка его подхватывает и раскачивает. На МРТ при ритмичном мерцании сильнее работают высшие зрительные области и их связь с таламусом, и чем сильнее эта связь, тем ярче узоры.</p>
+          <p>Режим «Без ритма» — контроль из исследования 2023 года: вспышек столько же, но интервалы случайные, от 50 до 150 мс. Попробуйте оба и сравните: разница и есть эффект ритма, а не просто света.</p>
+        </div></details>
+        <details><summary>Как устроено внутри</summary><div>
+          <p>Половину периода экран горит, половину тёмный. 10 Гц ровно ложатся на экраны 60 и 120 Гц: 3 или 6 кадров света, столько же темноты. Звука нет: в исследованиях были только вспышки. После сеанса можно записать, что вы видели.</p>
+        </div></details>
+        <p class="callout">Это мерцание в диапазоне, опасном при эпилепсии. Если у вас или кровных родственников были эпилепсия, судороги или мигрень с аурой — не включайте. Участников исследований заранее проверяли на это.</p>
+      </section>
+
       <section id="about-safety">
         <p class="label-sm">Для всех режимов</p>
         <h2>Безопасность</h2>
@@ -833,6 +926,9 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
             <li>Fultz N.E. et al. Coupled electrophysiological, hemodynamic, and CSF oscillations in human sleep. <i>Science</i> (2019). <a href="https://doi.org/10.1126/science.aax5440" target="_blank" rel="noopener">doi:10.1126/science.aax5440</a></li>
             <li>Levitt J., Lewis L. et al. Closed-loop auditory stimulation enhances CSF flow. <i>Sci. Transl. Med.</i> (2026). <a href="https://news.mit.edu/2026/pink-noise-burst-may-mean-more-restorative-sleep-0909" target="_blank" rel="noopener">MIT News</a></li>
             <li>Pistolas E., Smets L., Wagemans J. Wave after wave: multisensory hallucinations under multimodal Ganzfeld stimulation. <i>i-Perception</i> 16(5) (2025). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12457770/" target="_blank" rel="noopener">PMC12457770</a></li>
+            <li>Bartossek M.T., Kemmerer J., Schmidt T.T. Altered states phenomena induced by visual flicker light stimulation. <i>PLOS ONE</i> (2021). <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8248711/" target="_blank" rel="noopener">PMC8248711</a></li>
+            <li>Amaya I.A. et al. Effect of frequency and rhythmicity on flicker light-induced hallucinatory phenomena. <i>PLOS ONE</i> (2023). <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10089352/" target="_blank" rel="noopener">PMC10089352</a></li>
+            <li>Thalamocortical interactions reflecting the intensity of flicker light-induced visual hallucinatory phenomena (2025). <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11949548/" target="_blank" rel="noopener">PMC11949548</a></li>
             <li>Garcia-Argibay M., Santed M.A., Reales J.M. Efficacy of binaural auditory beats in cognition, anxiety, and pain perception: a meta-analysis. <i>Psychological Research</i> 83 (2019). <a href="https://pubmed.ncbi.nlm.nih.gov/30073406/" target="_blank" rel="noopener">PubMed 30073406</a></li>
             <li>Padmanabhan R., Hildreth A.J., Laws D. Binaural beat audio and pre-operative anxiety. <i>Anaesthesia</i> (2005). <a href="https://pubmed.ncbi.nlm.nih.gov/16115248/" target="_blank" rel="noopener">PubMed 16115248</a></li>
             <li>Binaural beats or 432 Hz music for preoperative dental anxiety (2021). <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7806348/" target="_blank" rel="noopener">PMC7806348</a></li>
@@ -859,7 +955,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
 <dialog class="warn" id="warn" aria-labelledby="warn-h">
   <div class="dlg">
     <h2 id="warn-h">Мерцающий свет</h2>
-    <p>Экран будет мерцать 40 раз в секунду. При фоточувствительной эпилепсии это может вызвать приступ, даже если раньше приступов не было. У остальных возможны головокружение, тошнота и головная боль.</p>
+    <p>Экран будет мерцать <span id="warn-hz">40 раз</span> в секунду. При фоточувствительной эпилепсии это может вызвать приступ, даже если раньше приступов не было. У остальных возможны головокружение, тошнота и головная боль.</p>
     <p>Не включайте свет, если у вас или кровных родственников были эпилепсия или судороги. Любое касание экрана сразу останавливает сеанс.</p>
     <label class="check"><input type="checkbox" id="warn-ok"> Я прочитал(а) предупреждение, эпилепсии и судорог у меня не было</label>
     <div class="dlg-actions">
@@ -881,6 +977,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   const MODES = {
     gamma: { title: 'Очистка', lead: 'Звук и свет 40 раз в секунду, как в протоколе MIT. Если станет нехорошо — переключитесь на уровень слабее.' },
     relax: { title: 'Отдых', lead: 'Дышите вслед за кругом. Биения в ритме мозговых волн звучат фоном.' },
+    fls:   { title: 'Узоры', lead: 'Нажмите ▶ и закройте глаза. Через минуту-другую появятся узоры и цвета. Касание экрана — стоп.' },
     focus: { title: 'Фокус', lead: 'Наденьте наушники, сядьте удобно, закройте глаза. Дослушайте до конца и сразу переходите к делу.' },
     ganz:  { title: 'Видения', lead: 'Затемните комнату и лягте. Держите телефон в 15–20 см над лицом, глаза полуприкрыты. Смотрите в цвет и ничего не ищите — картины придут сами.' },
   };
@@ -910,6 +1007,27 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     blue:  { name: 'синий',        seq: ['blue'] },
   };
   const GNOISE = { brown: 'шум волн', white: 'белый шум', none: 'тишина' };
+  // Узоры: ритм вспышек. a10 — контроль без ритма: в среднем 10 Гц, интервалы случайные.
+  const LPROGS = { r10: { name: '10 Гц', hz: 10 }, r3: { name: '3 Гц', hz: 3 }, a10: { name: '10 Гц без ритма', hz: 10, arr: true } };
+  const LCOLORS = { white: [255, 250, 240], red: [255, 50, 35], blue: [70, 90, 255] };
+  const LCOLOR_NAMES = { white: 'белый', red: 'красный', blue: 'синий' };
+  // Случайная, но повторяемая последовательность на 10 с: [начало вспышки, конец вспышки] от 50 до 150 мс.
+  const ARR = (() => {
+    const out = []; let t = 0, seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    while (t < 10) { const isi = 0.05 + 0.1 * rnd(); out.push([t, t + isi / 2]); t += isi; }
+    // Растягиваем, чтобы ровно 100 вспышек укладывались в 10 с и петля замыкалась без стыка.
+    const k = 10 / t; return out.map(([a, b]) => [a * k, b * k]);
+  })();
+  function flashOn(e) {
+    const pr = LPROGS[S.lprog];
+    if (!pr.arr) return ((e * pr.hz) % 1 + 1) % 1 < 0.5;
+    const t = ((e % 10) + 10) % 10;
+    let lo = 0, hi = ARR.length - 1;
+    while (lo < hi) { const m = (lo + hi + 1) >> 1; if (ARR[m][0] <= t) lo = m; else hi = m - 1; }
+    return t < ARR[lo][1];
+  }
+
   // Фокус: левое ухо — carrier, правое — carrier + beat. Целые частоты, буфер 1 с замыкается без стыка.
   const FKINDS = {
     memory:    { name: 'память · бета 15 Гц',        beat: 15, carrier: 250 },
@@ -929,6 +1047,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     rkind: 'alpha', rdur: 10, rvol: 18, breathe: true,
     gprog: 'cycle', gnoise: 'brown', gdur: 15, gvol: 18, gbright: 45,
     fkind: 'memory', fdur: 10, fvol: 18,
+    lprog: 'r10', lcolor: 'white', ldur: 5, lbright: 60,
   }, store.get('g40.prefs4', {}));
   if (!prefs.v5) { prefs.v5 = true; prefs.level = 3; prefs.dur = 30; prefs.sound = 'burst'; prefs.light = true; }
   if (!LEVELS[prefs.level]) prefs.level = 1;
@@ -938,6 +1057,9 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   if (!GNOISE[prefs.gnoise]) prefs.gnoise = 'brown';
   if (!FKINDS[prefs.fkind]) prefs.fkind = 'memory';
   if (![10, 15, 20].includes(prefs.fdur)) prefs.fdur = 10;
+  if (!LPROGS[prefs.lprog]) prefs.lprog = 'r10';
+  if (!LCOLORS[prefs.lcolor]) prefs.lcolor = 'white';
+  if (![3, 5, 10].includes(prefs.ldur)) prefs.ldur = 5;
   if (![10, 15, 25].includes(prefs.gdur)) prefs.gdur = 15;
   prefs.binaural = false;  // бинаурально — только осознанно, на один раз; при открытии всегда выключено
   if (prefs.dur > LEVELS[prefs.level].maxDur || !document.getElementById('d' + prefs.dur)) prefs.dur = LEVELS[prefs.level].dur;
@@ -945,7 +1067,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
 
   // view: какой экран открыт; S: снимок параметров на время сеанса (менять настройки во время сеанса нельзя).
   let view = 'home';
-  const S = { running: false, paused: false, base: 0, startedISO: null, t0: 0, lightT0: 0, total: 0, mode: 'gamma', level: 1, light: false, sound: 'tone', rkind: 'alpha', binaural: false, breathe: true, gprog: 'cycle', gnoise: 'brown', fkind: 'memory', lastId: null };
+  const S = { running: false, paused: false, base: 0, startedISO: null, t0: 0, lightT0: 0, total: 0, mode: 'gamma', level: 1, light: false, sound: 'tone', rkind: 'alpha', binaural: false, breathe: true, gprog: 'cycle', gnoise: 'brown', fkind: 'memory', lprog: 'r10', lcolor: 'white', lastId: null };
   let ctx = null, gain = null, live = [];
   const buffers = {};
 
@@ -1112,6 +1234,15 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
       loopSrc('bin:' + S.fkind, gain, t0, b % 1);
       return;
     }
+    if (S.mode === 'fls') {
+      // Звука нет, но беззвучный источник ведёт часы сеанса — как в «Видениях».
+      const g0 = ctx.createGain();
+      g0.gain.value = 0;
+      g0.connect(gain);
+      loopSrc('noise:brown', g0, t0, b % 8);
+      live.push({ stop() { g0.disconnect(); } });
+      return;
+    }
     if (S.mode === 'ganz') {
       // Тишина — всё равно запускаем беззвучный источник: по нему идут часы сеанса.
       const g2 = ctx.createGain();
@@ -1177,6 +1308,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     if (S.mode === 'relax') Object.assign(s, { rkind: S.rkind, binaural: S.binaural });
     if (S.mode === 'ganz') Object.assign(s, { gprog: S.gprog, gnoise: S.gnoise });
     if (S.mode === 'focus') s.fkind = S.fkind;
+    if (S.mode === 'fls') Object.assign(s, { lprog: S.lprog, lcolor: S.lcolor });
     return s;
   };
   // У каждого сеанса свой ключ — две вкладки не затирают друг друга.
@@ -1192,15 +1324,17 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
       if (S.mode === 'relax') { S.total = prefs.rdur * 60; S.rkind = prefs.rkind; S.binaural = prefs.binaural; S.breathe = prefs.breathe; }
       if (S.mode === 'ganz')  { S.total = prefs.gdur * 60; S.gprog = prefs.gprog; S.gnoise = prefs.gnoise; }
       if (S.mode === 'focus') { S.total = prefs.fdur * 60; S.fkind = prefs.fkind; }
+      if (S.mode === 'fls')   { S.total = prefs.ldur * 60; S.lprog = prefs.lprog; S.lcolor = prefs.lcolor; }
       $('#feel').hidden = true; $('#vision').hidden = true;
     }
     S.paused = false;
-    if (S.light) showOverlay(flick, fui);
+    if (S.light || S.mode === 'fls') showOverlay(flick, fui);
     if (S.mode === 'ganz') showOverlay(ganz, gui);
     wake();
     render();
     if (S.mode === 'gamma') setNote(fresh ? 'Сеанс идёт. Если станет неприятно, сразу «Стоп».' : 'Продолжаем.');
     else if (S.mode === 'relax') setNote(S.breathe ? RKINDS[S.rkind].note : 'Закройте глаза и просто слушайте.');
+    else if (S.mode === 'fls') setNote(fresh ? 'Глаза закрыты. Станет плохо — коснитесь экрана.' : 'Продолжаем.');
     else if (S.mode === 'focus') setNote('Закройте глаза и слушайте. Думать ни о чём специально не нужно.');
     else setNote('Сеанс на паузе продолжится с того же цвета.');
     if (isSleep()) dimLater(S.breathe && S.base < GUIDE ? (GUIDE - S.base) * 1000 : 20000);
@@ -1239,13 +1373,14 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     else if (snap.sec >= 5) setNote(`Остановлено на ${fmtDur(snap.sec)}. Записано как прерванный.`);
     else setNote('Сеанс меньше 5 секунд, в историю не попал.');
     $('#feel').hidden = !S.lastId || S.mode === 'ganz';
-    $('#vision').hidden = !S.lastId || S.mode !== 'ganz';
+    $('#vision').hidden = !S.lastId || !['ganz', 'fls'].includes(S.mode);
     if (!$('#vision').hidden) $('#vision-text').value = '';
   }
 
   function toggle() {
     if (S.running && !S.paused) return pause();
     if (!S.running && view === 'gamma' && lightActive()) return requireAck(play, () => { setLight(false); play(); });
+    if (!S.running && view === 'fls') return requireAck(play, null, 'fls');
     play();
   }
 
@@ -1350,6 +1485,14 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
         paintLight(lightValue(p, rampDur ? Math.min(1, (p - S.lightT0) / rampDur) : 1));
       }
     }
+    if (active && S.mode === 'fls' && !flick.hidden) {
+      // Время кадра по часам звука; яркость нарастает за первые 10 секунд.
+      const p = audioTimeAtFrame(now) - S.t0, e = S.base + p;
+      const k = p < 0 ? 0 : Math.min(1, e / 10) * prefs.lbright / 100;
+      const on = p >= 0 && flashOn(e);
+      const css = on ? 'rgb(' + LCOLORS[S.lcolor].map((v) => Math.round(v * k)).join(',') + ')' : '#000';
+      if (css !== lastGanz) { lastGanz = css; flick.style.backgroundColor = css; }
+    }
     if (active && S.mode === 'ganz' && !ganz.hidden) {
       // Яркость нарастает за первые 10 секунд, чтобы свет не бил в глаза.
       const e = elapsed(), k = Math.min(1, e / 10) * prefs.gbright / 100;
@@ -1380,7 +1523,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     requestAnimationFrame(frame);
   }
 
-  const plannedMin = (m) => m === 'relax' ? prefs.rdur : m === 'ganz' ? prefs.gdur : m === 'focus' ? prefs.fdur : prefs.dur;
+  const plannedMin = (m) => m === 'relax' ? prefs.rdur : m === 'ganz' ? prefs.gdur : m === 'focus' ? prefs.fdur : m === 'fls' ? prefs.ldur : prefs.dur;
   function drawTime() {
     const total = S.running ? S.total : plannedMin(cfgMode()) * 60;
     const e = S.running ? elapsed() : (doneShown ? total : 0);
@@ -1420,6 +1563,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     $('#sum-relax').textContent = `${prefs.rdur} мин${prefs.breathe ? ' · дыхание' : ''}${prefs.binaural ? ' · бинаурально' : ''}`;
     $('#sum-ganz').textContent = `${prefs.gdur} мин · ${GNOISE[prefs.gnoise]}`;
     $('#sum-focus').textContent = `${prefs.fdur} мин`;
+    $('#sum-fls').textContent = `${prefs.ldur} мин · яркость ${prefs.lbright}%`;
   }
 
   function render() {
@@ -1431,7 +1575,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     const onHome = mode === 'home';
     $('#home').hidden = !onHome;
     $('#session-wrap').hidden = onHome;
-    ['gamma', 'relax', 'ganz', 'focus'].forEach((m) => { $('#panel-' + m).hidden = mode !== m; });
+    ['gamma', 'relax', 'ganz', 'focus', 'fls'].forEach((m) => { $('#panel-' + m).hidden = mode !== m; });
     if (!onHome) { $('#mode-title').textContent = MODES[mode].title; $('#mode-lead').textContent = MODES[mode].lead; }
     if (!backArmed) $('#back').textContent = S.running ? '← Остановить и выйти' : '← Все режимы';
     $('#playIcon').innerHTML = active ? ICON_PAUSE : ICON_PLAY;
@@ -1445,7 +1589,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     renderStatus();
 
     // Параметры, которые меняют стимул, закрыты во время сеанса — иначе ломается синхронизация и запись.
-    document.querySelectorAll('input[name="level"], input[name="dur"], input[name="sound"], input[name="rkind"], input[name="gprog"], input[name="gnoise"], input[name="gdur"], input[name="fkind"], input[name="fdur"], #binaural, #breathe').forEach((i) => { i.disabled = S.running; });
+    document.querySelectorAll('input[name="level"], input[name="dur"], input[name="sound"], input[name="rkind"], input[name="gprog"], input[name="gnoise"], input[name="gdur"], input[name="fkind"], input[name="fdur"], input[name="lprog"], input[name="lcolor"], input[name="ldur"], #binaural, #breathe').forEach((i) => { i.disabled = S.running; });
     document.querySelectorAll('input[name="dur"]').forEach((i) => { if (+i.value > lv().maxDur) i.disabled = true; });
     const rd = RKINDS[prefs.rkind].durs;
     document.querySelectorAll('input[name="rdur"]').forEach((i) => {
@@ -1473,6 +1617,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
       const n = mode === 'gamma' ? 'Станет неприятно — сразу «Стоп».'
         : mode === 'relax' ? RKINDS[prefs.rkind].note
         : mode === 'focus' ? 'Без наушников не сработает: в динамике тоны смешаются.'
+        : mode === 'fls' ? 'Глаза не открывайте до конца сеанса.'
         : 'Нажмите ▶, и экран зальёт цветом. Касание — пауза.';
       setNote(n, '', true);
     }
@@ -1530,6 +1675,11 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   onPick('gdur', (v) => { prefs.gdur = +v; });
   onPick('fkind', (v) => { prefs.fkind = v; });
   onPick('fdur', (v) => { prefs.fdur = +v; });
+  onPick('lprog', (v) => { prefs.lprog = v; });
+  onPick('lcolor', (v) => { prefs.lcolor = v; });
+  onPick('ldur', (v) => { prefs.ldur = +v; });
+  const lbright = $('#lbright');
+  lbright.addEventListener('input', () => { prefs.lbright = +lbright.value; fill(lbright); $('#lbright-val').textContent = lbright.value + '%'; lastGanz = ''; savePrefs(); summaries(); });
   // Проверка наушников: короткий тон только в одно ухо.
   document.querySelectorAll('[data-ear]').forEach((btn) => btn.addEventListener('click', async () => {
     if (S.running && !S.paused) return;
@@ -1632,15 +1782,20 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   // ---------- предупреждение ----------
   const dlg = $('#warn'), ok = $('#warn-ok'), yes = $('#warn-yes');
   let onYes = null, onNo = null;
-  function requireAck(yesFn, noFn) {
-    if (store.get('g40.ack', false)) return yesFn();
+  // Согласие отдельное для каждого вида мерцания: 10 Гц опаснее 40 Гц.
+  let ackKey = 'g40.ack';
+  function requireAck(yesFn, noFn, kind) {
+    ackKey = kind ? 'g40.ack.' + kind : 'g40.ack';
+    if (store.get(ackKey, false)) return yesFn();
+    $('#warn-hz').textContent = kind === 'fls' ? `${LPROGS[prefs.lprog].hz} раз` : '40 раз';
+    $('#warn-no').textContent = kind === 'fls' ? 'Отмена' : 'Без света';
     onYes = yesFn; onNo = noFn;
     ok.checked = false; yes.disabled = true;
     dlg.showModal();
   }
   function closeDlg(fn) { onYes = onNo = null; dlg.close(); if (fn) fn(); }
   ok.addEventListener('change', () => { yes.disabled = !ok.checked; });
-  yes.addEventListener('click', () => { store.set('g40.ack', true); closeDlg(onYes); });
+  yes.addEventListener('click', () => { store.set(ackKey, true); closeDlg(onYes); });
   $('#warn-no').addEventListener('click', () => closeDlg(onNo));
   // Escape в диалоге = отмена: ничего не запускаем, переключатель света возвращаем как был.
   dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeDlg(); render(); });
@@ -1680,7 +1835,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     return s;
   }
   const FEEL = { ok: 'нормально', meh: 'не очень', bad: 'плохо' };
-  const modeOf = (s) => ['relax', 'ganz', 'focus'].includes(s.mode) ? s.mode : 'gamma';
+  const modeOf = (s) => ['relax', 'ganz', 'focus', 'fls'].includes(s.mode) ? s.mode : 'gamma';
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   // Сеанс, оборванный закрытием вкладки, записывается как прерванный при следующем запуске.
@@ -1698,6 +1853,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   function describe(s) {
     const m = modeOf(s);
     if (m === 'relax') return `отдых · ${RKINDS[s.rkind] ? RKINDS[s.rkind].name : 'биения'}`;
+    if (m === 'fls') return `узоры · ${LPROGS[s.lprog] ? LPROGS[s.lprog].name : 'мерцание'} · ${LCOLOR_NAMES[s.lcolor] || 'свет'}`;
     if (m === 'focus') return `фокус · ${FKINDS[s.fkind] ? FKINDS[s.fkind].name : 'биения'}`;
     if (m === 'ganz') return `видения · ${GPROGS[s.gprog] ? GPROGS[s.gprog].name : 'цвет'} · ${GNOISE[s.gnoise] || 'шум'}`;
     const lvName = ['', 'мягкий', 'средний', 'протокол'][s.level] || 'очистка';
@@ -1705,14 +1861,14 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     return `очистка · ${lvName} · ${snd}${s.light ? ' + свет' : ''}`;
   }
 
-  const BAR = { gamma: 'var(--g2)', relax: 'var(--g1)', ganz: 'var(--g3)', focus: 'var(--g4)' };
+  const BAR = { gamma: 'var(--g2)', relax: 'var(--g1)', ganz: 'var(--g3)', focus: 'var(--g4)', fls: 'var(--g5)' };
   function renderStats() {
     const all = sessions();
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const byDay = {}, doneDays = new Set();
     for (const s of all) {
       const k = dayKey(new Date(s.start));
-      byDay[k] = byDay[k] || { gamma: 0, relax: 0, ganz: 0, focus: 0 };
+      byDay[k] = byDay[k] || { gamma: 0, relax: 0, ganz: 0, focus: 0, fls: 0 };
       byDay[k][modeOf(s)] += s.sec;
       if (s.done) doneDays.add(k);
     }
@@ -1723,8 +1879,8 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
 
     let week = 0, maxSec = 30 * 60;
     const span = [];
-    const sum = (v) => v.gamma + v.relax + v.ganz + v.focus;
-    for (let i = 13; i >= 0; i--) { const x = new Date(today); x.setDate(x.getDate() - i); const v = byDay[dayKey(x)] || { gamma: 0, relax: 0, ganz: 0, focus: 0 }; span.push([x, v, i]); maxSec = Math.max(maxSec, sum(v)); }
+    const sum = (v) => v.gamma + v.relax + v.ganz + v.focus + v.fls;
+    for (let i = 13; i >= 0; i--) { const x = new Date(today); x.setDate(x.getDate() - i); const v = byDay[dayKey(x)] || { gamma: 0, relax: 0, ganz: 0, focus: 0, fls: 0 }; span.push([x, v, i]); maxSec = Math.max(maxSec, sum(v)); }
     const days = $('#days');
     days.textContent = '';
     for (const [x, v, i] of span) {
@@ -1792,6 +1948,14 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   // Две волны чуть разной частоты — левое и правое ухо.
   $('#waveFocusL').setAttribute('d', wavePath(9, 20, 400, 96));
   $('#waveFocusR').setAttribute('d', wavePath(10, 20, 400, 96));
+  // Значки ритма: прямоугольные импульсы, у «без ритма» — неровные.
+  const pulses = (edges) => 'M0 13' + edges.map(([a, b]) => `H${a}V3H${b}V13`).join('') + 'H30';
+  let sq = 'M0 70';
+  for (let x = 0; x < 400; x += 40) sq += `H${x + 10}V26H${x + 30}V70`;
+  $('#waveFls').setAttribute('d', sq + 'H400');
+  $('#lw-r10').setAttribute('d', pulses([[2, 5], [8, 11], [14, 17], [20, 23], [26, 29]]));
+  $('#lw-r3').setAttribute('d', pulses([[4, 12], [19, 27]]));
+  $('#lw-a10').setAttribute('d', pulses([[1, 3], [5, 9], [14, 15], [17, 20], [26, 28]]));
 
   const ticks = $('#ticks');
   for (let i = 0; i < 60; i++) {
@@ -1811,6 +1975,10 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   $('#g' + prefs.gdur).checked = true;
   $('#fk-' + prefs.fkind).checked = true;
   $('#f' + prefs.fdur).checked = true;
+  $('#lp-' + prefs.lprog).checked = true;
+  $('#lc-' + prefs.lcolor).checked = true;
+  $('#l' + prefs.ldur).checked = true;
+  lbright.value = prefs.lbright; $('#lbright-val').textContent = prefs.lbright + '%'; fill(lbright);
   for (const [el, key] of [[vol, 'vol'], [rvol, 'rvol'], [gvol, 'gvol'], [fvol, 'fvol'], [bright, 'bright'], [gbright, 'gbright']]) {
     el.value = prefs[key]; $('#' + el.id + '-val').textContent = prefs[key] + '%'; fill(el);
   }
@@ -1819,6 +1987,6 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   requestAnimationFrame(frame);
 
   // Хук для автотестов (не влияет на работу).
-  window.__g40 = { volGain, gainNow: () => gain.gain.value, S, prefs, LEVELS, SOUNDS, RKINDS, GPROGS, FKINDS, elapsed, lightValue, breathShape, guideAt, fadeAt, ganzColor, finish, pause, play, openMode, bufferFor, get ctx() { return ctx; }, get live() { return live; } };
+  window.__g40 = { volGain, gainNow: () => gain.gain.value, S, prefs, LEVELS, SOUNDS, RKINDS, GPROGS, FKINDS, LPROGS, ARR, flashOn, elapsed, lightValue, breathShape, guideAt, fadeAt, ganzColor, finish, pause, play, openMode, bufferFor, get ctx() { return ctx; }, get live() { return live; } };
 })();
 </script>
