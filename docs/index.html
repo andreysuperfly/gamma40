@@ -1,0 +1,1653 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Гамма 40</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&display=swap">
+<style>
+/* Layout — пирамида: 1) три режима; 2) в сеансе кольцо, главный выбор и громкость; 3) свёрнутые «Настройки»; 4) «О методе» — коротко сверху, подробности раскрываются.
+   Градиент живёт внутри кольца и в превью режимов; остальное — спокойные поверхности. */
+:root {
+  --bg: #eef1f3;
+  --surface: #ffffff;
+  --sunken: #e4e8eb;
+  --ink: #141a20;
+  --muted: #5f6b76;
+  --faint: #8b96a0;
+  --line: #d6dce1;
+  --accent: #3f6fd8;
+  --g1: #7fb8c9;   /* морская вода */
+  --g2: #8b93e6;   /* сумеречный синий */
+  --g3: #e2a59a;   /* тёплый коралл */
+  --good: #2b8a63;
+  --warn: #b66a12;
+  --bad: #c2414f;
+  --radius: 22px;
+  --font: "Onest", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1317; --surface: #171d23; --sunken: #0b0f12; --ink: #e9eef2; --muted: #9aa6b1; --faint: #6c7883;
+    --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f;
+    --good: #5cc497; --warn: #e5a556; --bad: #f07a86;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1317; --surface: #171d23; --sunken: #0b0f12; --ink: #e9eef2; --muted: #9aa6b1; --faint: #6c7883;
+  --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f;
+  --good: #5cc497; --warn: #e5a556; --bad: #f07a86;
+  color-scheme: dark;
+}
+
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.app {
+  max-width: 1080px; margin: 0 auto;
+  padding-block: 20px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 24px;
+}
+:is(button, input, a, summary, textarea, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.label-sm { margin: 0; font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+
+/* ---------- шапка и вкладки ---------- */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand h1 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; }
+.brand span { color: var(--faint); font-size: .85rem; }
+.tabs { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--sunken); }
+.tabs button { border: 0; background: none; font: inherit; font-weight: 500; font-size: .9rem; color: var(--muted); padding: 7px 16px; border-radius: 999px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+
+/* ---------- 1. стартовый экран ---------- */
+.home { display: grid; gap: 18px; }
+.home-h { text-align: center; margin: 20px 0 8px; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 500; letter-spacing: -.03em; line-height: 1.1; }
+/* На главном название уже крупно по центру — в шапке не повторяем. */
+.on-home .brand { display: none; }
+.on-home .top { justify-content: center; }
+.modes { display: grid; gap: 12px; }
+@media (min-width: 820px) { .modes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.mode-card {
+  display: grid; grid-template-rows: auto 1fr auto; text-align: left; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer;
+  border-radius: var(--radius); background: var(--surface); overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.mode-card:hover { transform: translateY(-2px); box-shadow: 0 14px 36px -22px rgba(20, 30, 50, .45); }
+.mode-card .art { display: block; width: 100%; height: 96px; }
+.mode-card .mc-body { display: grid; gap: 6px; align-content: start; padding: 18px 20px 0; }
+.mode-card .mc-kicker { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.mode-card h2 { margin: 0; font-size: 1.35rem; font-weight: 600; letter-spacing: -.015em; }
+.mode-card p { margin: 0; color: var(--muted); font-size: .92rem; }
+.mode-card .mc-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 20px 18px; }
+.ev { font-size: .75rem; font-weight: 500; padding: 4px 10px; border-radius: 999px; background: var(--sunken); color: var(--muted); }
+.mode-card .go { font-weight: 600; font-size: .9rem; white-space: nowrap; }
+.ganz-art { background: linear-gradient(110deg, #e2483a, #ef8a3c 30%, #d9483d 50%, #8c4fc4 72%, #4b6ee0); filter: saturate(.8); }
+
+/* ---------- 2. сеанс ---------- */
+.session-wrap { display: grid; gap: 18px; }
+.session-head { display: grid; gap: 6px; }
+.back { justify-self: start; border: 1px solid var(--line); background: var(--surface); font: inherit; font-weight: 500; font-size: .95rem; color: var(--ink); cursor: pointer; padding: 10px 18px; border-radius: 999px; min-height: 44px; }
+.back:hover { background: var(--sunken); }
+.back.armed { color: var(--bad); border-color: var(--bad); }
+.session-head h2 { margin: 0; font-size: 1.6rem; font-weight: 600; letter-spacing: -.02em; }
+.session-head p { margin: 0; color: var(--muted); max-width: 60ch; }
+.running .session-head p, .running .session-head .more { display: none; }
+.session-head { padding-top: 2px; }
+.session-head h2 { margin-top: 6px !important; }
+.more { border: 0; background: none; padding: 0; font: inherit; font-size: .9rem; font-weight: 500; color: var(--accent); cursor: pointer; justify-self: start; }
+
+.session { display: grid; gap: 22px; }
+@media (min-width: 880px) { .session { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; } .stage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 20px); } }
+.stage { display: grid; justify-items: center; gap: 20px; padding: 28px 20px 24px; background: var(--surface); border-radius: var(--radius); }
+.dial { position: relative; width: min(290px, 74vw); aspect-ratio: 1; max-width: 100%; }
+.dial .flow {
+  position: absolute; inset: 9%; border-radius: 50%;
+  background: linear-gradient(120deg, var(--g1), var(--g2), var(--g3), var(--g2), var(--g1));
+  background-size: 300% 300%;
+  opacity: .16; transition: opacity 1.5s ease;
+  animation: flow 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.running .dial .flow { opacity: .34; }
+@keyframes flow { 0% { background-position: 0% 30%; } 100% { background-position: 100% 70%; } }
+.dial svg { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; }
+.dial .track { fill: none; stroke: var(--sunken); stroke-width: 6; }
+.dial .prog { fill: none; stroke: url(#ringGrad); stroke-width: 6; stroke-linecap: round; }
+.dial .ticks line { stroke: var(--line); stroke-width: 1.5; }
+.readout { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; text-align: center; gap: 4px; }
+.time { font-size: clamp(2.8rem, 13vw, 3.8rem); font-weight: 300; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.status { font-size: .85rem; color: var(--muted); }
+.status.breath { font-size: 1rem; color: var(--ink); }
+
+.controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.play {
+  width: 64px; height: 64px; border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center;
+  background: var(--ink); color: var(--surface); transition: transform .15s ease;
+}
+.play:active { transform: scale(.95); }
+.play svg { width: 24px; height: 24px; }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-weight: 500; font-size: .9rem; padding: 10px 18px; border-radius: 999px; cursor: pointer; }
+.btn:hover { background: var(--sunken); }
+.btn:disabled { opacity: .4; cursor: default; background: var(--surface); }
+.btn.stop:not(:disabled) { border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); color: var(--bad); }
+.btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.btn.primary:disabled { background: var(--ink); }
+.note { margin: 0; max-width: 36ch; text-align: center; font-size: .88rem; color: var(--muted); min-height: 2.6em; text-wrap: balance; }
+.note.good { color: var(--good); }
+.note.warn { color: var(--warn); }
+
+.after { display: grid; gap: 10px; justify-items: center; width: 100%; }
+.after p { margin: 0; font-size: .88rem; color: var(--muted); }
+.after .row-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.after textarea { width: 100%; max-width: 360px; box-sizing: border-box; min-height: 84px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-size: .92rem; resize: vertical; }
+
+/* ---------- панель параметров ---------- */
+.panel { display: grid; gap: 22px; min-width: 0; align-content: start; }
+.group { display: grid; gap: 10px; }
+.group-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.group-h h3, .group-h label { margin: 0; font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.group-h .val { font-size: .9rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 560px) { .levels { grid-template-columns: 1fr; } }
+.level { position: relative; }
+.level input { position: absolute; opacity: 0; pointer-events: none; }
+.level label {
+  display: grid; gap: 6px; align-content: start; height: 100%; box-sizing: border-box; padding: 14px 16px; border-radius: 18px; cursor: pointer;
+  background: var(--surface); border: 1.5px solid transparent; transition: border-color .15s ease;
+}
+.level label:hover { border-color: var(--line); }
+.level input:checked + label { border-color: var(--ink); }
+.level input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+.level input:disabled + label { opacity: .5; cursor: default; }
+.level input:checked:disabled + label { opacity: 1; }
+.lv-top { display: flex; align-items: center; gap: 10px; }
+.lv-bars { display: flex; gap: 3px; align-items: flex-end; height: 16px; flex: none; }
+.lv-bars i { width: 5px; border-radius: 3px; background: var(--line); }
+.lv-bars i:nth-child(1) { height: 6px; } .lv-bars i:nth-child(2) { height: 11px; } .lv-bars i:nth-child(3) { height: 16px; }
+.lv-bars i.on { background: linear-gradient(0deg, var(--g1), var(--g2)); }
+.lv-wave { width: 30px; height: 16px; flex: none; }
+.lv-wave path { fill: none; stroke: var(--g2); stroke-width: 1.6; stroke-linecap: round; }
+.swatch { width: 16px; height: 16px; border-radius: 50%; flex: none; }
+.level b { font-weight: 600; font-size: 1rem; }
+.level span.sub { font-size: .84rem; color: var(--muted); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips input { position: absolute; opacity: 0; pointer-events: none; }
+.chips label { padding: 8px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); cursor: pointer; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.settings-body .chips label { background: var(--bg); }
+.chips input:checked + label { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.chips input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips input:disabled + label { opacity: .35; cursor: default; }
+.chips input:checked:disabled + label { opacity: .7; }
+
+.row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.row span { font-size: .92rem; }
+.row small { display: block; color: var(--faint); font-size: .8rem; }
+.switch { position: relative; width: 44px; height: 26px; flex: none; }
+.switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+.switch i { position: absolute; inset: 0; border-radius: 999px; background: var(--line); transition: background .2s ease; }
+.switch i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: translate .2s ease; }
+.switch input:checked + i { background: var(--ink); }
+.switch input:checked + i::after { translate: 18px 0; }
+.switch input:not(:checked) + i::after { background: var(--faint); }
+.switch input:focus-visible + i { outline: 2px solid var(--accent); outline-offset: 2px; }
+.switch input:disabled + i { opacity: .55; }
+
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 999px; margin: 8px 0; background: linear-gradient(90deg, var(--ink) var(--p, 50%), var(--line) var(--p, 50%)); cursor: pointer; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); border: 1.5px solid var(--ink); }
+input[type="range"]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--surface); border: 1.5px solid var(--ink); }
+.hint { margin: 0; font-size: .84rem; color: var(--muted); max-width: 62ch; }
+.hint.warn { color: var(--warn); }
+.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; font-size: .9rem; color: var(--muted); }
+
+/* 3. настройки — свёрнуты, в заголовке видна сводка */
+details.settings { background: var(--surface); border-radius: 18px; }
+details.settings > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 18px; }
+details.settings > summary::-webkit-details-marker { display: none; }
+details.settings > summary b { font-weight: 600; font-size: .95rem; }
+details.settings > summary .sum { flex: 1; min-width: 0; color: var(--muted); font-size: .84rem; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+details.settings > summary::after { content: ""; flex: none; width: 8px; height: 8px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); rotate: 45deg; translate: 0 -2px; transition: rotate .2s ease; }
+details.settings[open] > summary::after { rotate: 225deg; translate: 0 2px; }
+.settings-body { display: grid; gap: 20px; padding: 4px 18px 20px; }
+.screen { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: var(--bg); }
+.dot { flex: none; width: 8px; height: 8px; margin-top: .5em; border-radius: 50%; background: var(--faint); }
+.dot.good { background: var(--good); } .dot.warn { background: var(--warn); } .dot.bad { background: var(--bad); }
+.screen b { display: block; font-weight: 600; font-size: .9rem; }
+.screen span { font-size: .84rem; color: var(--muted); }
+
+/* ---------- история ---------- */
+.history { display: grid; gap: 20px; }
+.nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.num { padding: 16px; border-radius: 18px; background: var(--surface); display: grid; gap: 2px; align-content: start; }
+.num b { font-size: 1.7rem; font-weight: 400; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.num span { font-size: .8rem; color: var(--muted); line-height: 1.3; }
+.days-wrap { padding: 18px 16px 14px; background: var(--surface); border-radius: 18px; display: grid; gap: 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .78rem; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; background: var(--c); }
+.days { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; align-items: end; }
+.day { display: grid; gap: 6px; justify-items: center; }
+.bar { width: 100%; max-width: 22px; height: 72px; border-radius: 6px; background: var(--sunken); overflow: hidden; display: flex; flex-direction: column-reverse; }
+.bar i { display: block; width: 100%; flex: none; }
+.day small { font-size: .7rem; color: var(--faint); font-variant-numeric: tabular-nums; }
+.day.today small { color: var(--ink); font-weight: 600; }
+.list { list-style: none; margin: 0; padding: 0; background: var(--surface); border-radius: 18px; }
+.list li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px 12px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: .9rem; }
+.list li:last-child { border-bottom: 0; }
+.list small { display: block; color: var(--faint); font-size: .8rem; }
+.list .vision { grid-column: 1 / -1; font-size: .86rem; color: var(--muted); font-style: italic; overflow-wrap: anywhere; }
+.list .dur { font-variant-numeric: tabular-nums; }
+.chip { font-size: .75rem; font-weight: 500; padding: 3px 9px; border-radius: 999px; background: var(--sunken); color: var(--muted); white-space: nowrap; }
+.chip.done { color: var(--good); background: color-mix(in srgb, var(--good) 13%, transparent); }
+.feel-bad { color: var(--bad); }
+.empty { margin: 0; padding: 22px; border-radius: 18px; background: var(--surface); color: var(--muted); text-align: center; }
+.hist-foot { display: flex; justify-content: flex-end; }
+.btn.armed { color: var(--bad); border-color: var(--bad); }
+
+/* ---------- 4. о методе ---------- */
+.about { display: grid; gap: 14px; }
+.sum-cards { display: grid; gap: 10px; }
+@media (min-width: 820px) { .sum-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.sum-card { display: grid; gap: 8px; align-content: start; padding: 18px; border-radius: 18px; background: var(--surface); }
+.sum-card h3 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+.sum-card p { margin: 0; font-size: .9rem; color: var(--muted); }
+.sum-card dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; font-size: .85rem; }
+.sum-card dt { color: var(--faint); }
+.sum-card dd { margin: 0; }
+.doc { display: grid; gap: 28px; background: var(--surface); border-radius: var(--radius); padding: clamp(20px, 4vw, 40px); }
+.doc section { display: grid; gap: 10px; max-width: 68ch; min-width: 0; scroll-margin-top: 20px; }
+.doc h2 { margin: 0; font-size: 1.3rem; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; }
+.doc p { margin: 0; }
+.doc .lead { font-size: 1.05rem; color: var(--muted); }
+.doc ul, .doc ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.doc a { color: var(--accent); overflow-wrap: anywhere; }
+.doc details { border-top: 1px solid var(--line); }
+.doc details > summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; font-weight: 600; }
+.doc details > summary::-webkit-details-marker { display: none; }
+.doc details > summary::after { content: "+"; color: var(--muted); font-weight: 400; transition: rotate .2s ease; }
+.doc details[open] > summary::after { rotate: 45deg; }
+.doc details > div { display: grid; gap: 10px; padding-bottom: 14px; }
+.doc section > details:last-child { border-bottom: 1px solid var(--line); }
+.table-wrap { overflow-x: auto; }
+.doc table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: .88rem; }
+.doc th, .doc td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.doc th { font-weight: 600; color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; }
+.doc td:first-child { color: var(--muted); white-space: nowrap; }
+.callout { padding: 14px 16px; border-radius: 14px; background: color-mix(in srgb, var(--warn) 10%, transparent); }
+
+/* ---------- полноэкранные слои ---------- */
+.flicker, .ganz { position: fixed; inset: 0; z-index: 100; background: #000; cursor: pointer; touch-action: none; }
+.overlay-ui {
+  position: absolute; left: 0; right: 0; margin-inline: auto; width: max-content; bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  display: flex; gap: 10px; align-items: center; padding: 8px 8px 8px 16px; border-radius: 999px; background: rgba(40,40,40,.9); color: #ddd; font-size: .88rem;
+  transition: opacity 1s ease; white-space: nowrap; max-width: calc(100vw - 32px); box-sizing: border-box;
+}
+.overlay-ui.solo { white-space: normal; text-align: center; display: grid; gap: 2px; justify-items: center; border-radius: 20px; }
+.overlay-ui.solo small { color: #9a9a9a; font-size: .78rem; }
+.overlay-ui.solo { padding: 10px 18px; }
+.overlay-ui button { border: 0; border-radius: 999px; padding: 8px 14px; font: inherit; font-weight: 600; background: #eee; color: #111; cursor: pointer; }
+.overlay-ui.fade { opacity: 0; }
+.dim { position: fixed; inset: 0; z-index: 90; background: #000; display: grid; place-items: center; cursor: pointer; }
+.dim i { width: 10px; height: 10px; border-radius: 50%; background: #2c3640; }
+.dim p { position: absolute; bottom: calc(28px + env(safe-area-inset-bottom, 0px)); margin: 0; color: #3b4652; font-size: .85rem; }
+
+/* ---------- диалог ---------- */
+dialog.warn { border: 0; padding: 0; border-radius: 24px; width: min(440px, calc(100vw - 32px)); background: var(--surface); color: var(--ink); box-shadow: 0 30px 80px -20px rgba(0,0,0,.45); }
+dialog.warn::backdrop { background: rgba(10, 14, 18, .5); }
+.dlg { padding: 24px; display: grid; gap: 14px; }
+.dlg h2 { margin: 0; font-size: 1.2rem; font-weight: 600; }
+.dlg p { margin: 0; font-size: .92rem; }
+.check { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: var(--sunken); cursor: pointer; font-size: .9rem; }
+.check input { width: 20px; height: 20px; margin: 0; flex: none; accent-color: var(--ink); }
+.dlg-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+
+footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
+
+@media (prefers-reduced-motion: reduce) { .dial .flow { animation: none; } .mode-card { transition: none; } }
+</style>
+
+<main class="app">
+  <header class="top">
+    <div class="brand"><h1>Гамма 40</h1><span>звук и свет для мозга</span></div>
+    <nav class="tabs" role="tablist" aria-label="Разделы">
+      <button role="tab" id="tab-session" aria-controls="view-session" aria-selected="true">Сеанс</button>
+      <button role="tab" id="tab-history" aria-controls="view-history" aria-selected="false">История</button>
+      <button role="tab" id="tab-about" aria-controls="view-about" aria-selected="false">О методе</button>
+    </nav>
+  </header>
+
+  <div id="view-session" role="tabpanel" aria-labelledby="tab-session">
+    <!-- ===== 1. Три режима ===== -->
+    <section class="home" id="home">
+      <h2 class="home-h">Гамма 40</h2>
+      <div class="modes">
+        <button class="mode-card" data-mode="gamma">
+          <svg class="art" viewBox="0 0 400 96" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="mgA" x1="0" x2="1"><stop offset="0" style="stop-color: var(--g1)"></stop><stop offset=".6" style="stop-color: var(--g2)"></stop><stop offset="1" style="stop-color: var(--g3)"></stop></linearGradient></defs>
+            <rect width="400" height="96" fill="url(#mgA)" opacity=".18"></rect>
+            <path id="waveGamma" fill="none" stroke="url(#mgA)" stroke-width="2.5" stroke-linecap="round"></path>
+          </svg>
+          <div class="mc-body">
+            <span class="mc-kicker">Гамма 40 Гц</span>
+            <h2>Очистка</h2>
+            <p>Звук и свет 40 раз в секунду, ритм из исследований болезни Альцгеймера.</p>
+          </div>
+          <div class="mc-foot"><span class="ev">мыши: да · люди: испытания</span><span class="go">→</span></div>
+        </button>
+        <button class="mode-card" data-mode="relax">
+          <svg class="art" viewBox="0 0 400 96" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="mgB" x1="0" x2="1"><stop offset="0" style="stop-color: var(--g2)"></stop><stop offset="1" style="stop-color: var(--g1)"></stop></linearGradient></defs>
+            <rect width="400" height="96" fill="url(#mgB)" opacity=".18"></rect>
+            <path id="waveRelax" fill="none" stroke="url(#mgB)" stroke-width="2.5" stroke-linecap="round"></path>
+          </svg>
+          <div class="mc-body">
+            <span class="mc-kicker">Альфа · тета · дельта</span>
+            <h2>Отдых</h2>
+            <p>Медленное дыхание и мягкие биения, чтобы успокоиться или заснуть.</p>
+          </div>
+          <div class="mc-foot"><span class="ev">дыхание: надёжно · биения: слабо</span><span class="go">→</span></div>
+        </button>
+        <button class="mode-card" data-mode="ganz">
+          <div class="art ganz-art" aria-hidden="true"></div>
+          <div class="mc-body">
+            <span class="mc-kicker">Ганцфельд</span>
+            <h2>Видения</h2>
+            <p>Ровный цветной свет и шум волн. Через 10–20 минут мозг сам начинает рисовать картины.</p>
+          </div>
+          <div class="mc-foot"><span class="ev">видения у 9 из 10</span><span class="go">→</span></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== 2. Сеанс ===== -->
+    <div class="session-wrap" id="session-wrap" hidden>
+      <div class="session-head">
+        <button class="back" id="back">← Все режимы</button>
+        <h2 id="mode-title"></h2>
+        <p id="mode-lead"></p>
+        <button class="more" id="mode-more">Как это работает →</button>
+      </div>
+      <div class="session">
+        <section class="stage" aria-label="Таймер">
+          <div class="dial">
+            <div class="flow" id="flow" aria-hidden="true"></div>
+            <svg viewBox="0 0 240 240" aria-hidden="true">
+              <defs>
+                <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" style="stop-color: var(--g1)"></stop>
+                  <stop offset="55%" style="stop-color: var(--g2)"></stop>
+                  <stop offset="100%" style="stop-color: var(--g3)"></stop>
+                </linearGradient>
+              </defs>
+              <g class="ticks" id="ticks"></g>
+              <circle class="track" cx="120" cy="120" r="108"></circle>
+              <circle class="prog" id="prog" cx="120" cy="120" r="108"></circle>
+            </svg>
+            <div class="readout">
+              <div class="time" id="time">15:00</div>
+              <div class="status" id="status" aria-live="polite">готово</div>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="play" id="play" aria-label="Начать сеанс"><svg viewBox="0 0 24 24" id="playIcon" aria-hidden="true"></svg></button>
+            <button class="btn stop" id="stop" disabled>Стоп</button>
+            <button class="btn" id="dim-btn" hidden>Погасить экран</button>
+          </div>
+          <p class="note" id="note"></p>
+          <div class="after" id="feel" hidden>
+            <p>Как самочувствие?</p>
+            <div class="row-btns">
+              <button class="btn" data-feel="ok">Нормально</button>
+              <button class="btn" data-feel="meh">Не очень</button>
+              <button class="btn" data-feel="bad">Плохо</button>
+            </div>
+          </div>
+          <div class="after" id="vision" hidden>
+            <p><label for="vision-text">Что вы видели или слышали?</label></p>
+            <textarea id="vision-text" placeholder="Узоры, цвета, места, лица, звуки воды…"></textarea>
+            <button class="btn" id="vision-save">Сохранить в историю</button>
+          </div>
+        </section>
+
+        <!-- ===== Очистка ===== -->
+        <div class="panel" id="panel-gamma">
+          <div class="group">
+            <div class="group-h"><h3>Уровень</h3></div>
+            <div class="levels" role="radiogroup" aria-label="Уровень">
+              <div class="level"><input type="radio" name="level" id="lv3" value="3"><label for="lv3">
+                <span class="lv-top"><span class="lv-bars"><i class="on"></i><i class="on"></i><i class="on"></i></span><b>Протокол</b></span>
+                <span class="sub">Как в MIT, 30&nbsp;мин</span>
+              </label></div>
+              <div class="level"><input type="radio" name="level" id="lv2" value="2"><label for="lv2">
+                <span class="lv-top"><span class="lv-bars"><i class="on"></i><i class="on"></i><i></i></span><b>Средний</b></span>
+                <span class="sub">Звук и мягкий свет, 20&nbsp;мин</span>
+              </label></div>
+              <div class="level"><input type="radio" name="level" id="lv1" value="1"><label for="lv1">
+                <span class="lv-top"><span class="lv-bars"><i class="on"></i><i></i><i></i></span><b>Мягкий</b></span>
+                <span class="sub">Только звук, 15&nbsp;мин</span>
+              </label></div>
+            </div>
+            <p class="hint warn" id="light-warn" hidden>Свет мерцает 40 раз в секунду. Опасно при эпилепсии. Если закружится голова — сразу «Стоп».</p>
+          </div>
+
+          <div class="group">
+            <div class="group-h"><label for="vol">Громкость</label><span class="val" id="vol-val"></span></div>
+            <input type="range" id="vol" min="0" max="100" step="1" value="20">
+          </div>
+
+          <details class="settings" id="set-gamma">
+            <summary><b>Настройки</b><span class="sum" id="sum-gamma"></span></summary>
+            <div class="settings-body">
+              <div class="group">
+                <div class="group-h"><h3>Звук</h3></div>
+                <div class="chips" role="radiogroup" aria-label="Звук">
+                  <input type="radio" name="sound" id="snd-tone" value="tone"><label for="snd-tone">Тёплый тон</label>
+                  <input type="radio" name="sound" id="snd-chord" value="chord"><label for="snd-chord">Аккорд</label>
+                  <input type="radio" name="sound" id="snd-burst" value="burst"><label for="snd-burst">Импульсы 10 кГц</label>
+                </div>
+                <p class="hint" id="sound-hint"></p>
+              </div>
+              <div class="group">
+                <div class="group-h"><h3>Длительность</h3></div>
+                <div class="chips" role="radiogroup" aria-label="Длительность">
+                  <input type="radio" name="dur" id="d10" value="10"><label for="d10">10 мин</label>
+                  <input type="radio" name="dur" id="d15" value="15"><label for="d15">15</label>
+                  <input type="radio" name="dur" id="d20" value="20"><label for="d20">20</label>
+                  <input type="radio" name="dur" id="d30" value="30"><label for="d30">30</label>
+                  <input type="radio" name="dur" id="d45" value="45"><label for="d45">45</label>
+                  <input type="radio" name="dur" id="d60" value="60"><label for="d60">60</label>
+                </div>
+                <p class="hint" id="dur-hint"></p>
+              </div>
+              <div class="row">
+                <span>Мерцание экрана<small id="light-sub"></small></span>
+                <span class="switch"><input type="checkbox" id="light" autocomplete="off" aria-label="Мерцание экрана"><i></i></span>
+              </div>
+              <div class="group" id="bright-group" hidden>
+                <div class="group-h"><label for="bright">Яркость вспышки</label><span class="val" id="bright-val"></span></div>
+                <input type="range" id="bright" min="10" max="100" step="1" value="60">
+              </div>
+              <div class="screen">
+                <span class="dot" id="hz-dot"></span>
+                <div><b id="hz-title">Измеряем экран…</b><span id="hz-text">Для ровного мигания 40 Гц экран должен обновляться 80, 120 или 240 раз в секунду.</span></div>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- ===== Отдых ===== -->
+        <div class="panel" id="panel-relax" hidden>
+          <div class="group">
+            <div class="group-h"><h3>Ритм</h3></div>
+            <div class="levels" role="radiogroup" aria-label="Ритм">
+              <div class="level"><input type="radio" name="rkind" id="rk-alpha" value="alpha"><label for="rk-alpha">
+                <span class="lv-top"><svg class="lv-wave" viewBox="0 0 30 16" aria-hidden="true"><path id="lw-alpha"></path></svg><b>Альфа</b></span>
+                <span class="sub">10 Гц · успокоиться, 10&nbsp;мин</span>
+              </label></div>
+              <div class="level"><input type="radio" name="rkind" id="rk-theta" value="theta"><label for="rk-theta">
+                <span class="lv-top"><svg class="lv-wave" viewBox="0 0 30 16" aria-hidden="true"><path id="lw-theta"></path></svg><b>Тета</b></span>
+                <span class="sub">6 Гц · медитация, 15&nbsp;мин</span>
+              </label></div>
+              <div class="level"><input type="radio" name="rkind" id="rk-delta" value="delta"><label for="rk-delta">
+                <span class="lv-top"><svg class="lv-wave" viewBox="0 0 30 16" aria-hidden="true"><path id="lw-delta"></path></svg><b>Дельта</b></span>
+                <span class="sub">2 Гц · заснуть, 30&nbsp;мин</span>
+              </label></div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-h"><label for="rvol">Громкость</label><span class="val" id="rvol-val"></span></div>
+            <input type="range" id="rvol" min="0" max="100" step="1" value="18">
+          </div>
+
+          <details class="settings" id="set-relax">
+            <summary><b>Настройки</b><span class="sum" id="sum-relax"></span></summary>
+            <div class="settings-body">
+              <div class="group">
+                <div class="group-h"><h3>Длительность</h3></div>
+                <div class="chips" role="radiogroup" aria-label="Длительность">
+                  <input type="radio" name="rdur" id="r5" value="5"><label for="r5">5</label>
+                  <input type="radio" name="rdur" id="r10" value="10"><label for="r10">10</label>
+                  <input type="radio" name="rdur" id="r15" value="15"><label for="r15">15</label>
+                  <input type="radio" name="rdur" id="r20" value="20"><label for="r20">20</label>
+                  <input type="radio" name="rdur" id="r30" value="30"><label for="r30">30</label>
+                  <input type="radio" name="rdur" id="r45" value="45"><label for="r45">45</label>
+                  <input type="radio" name="rdur" id="r60" value="60"><label for="r60">60</label>
+                </div>
+              </div>
+              <div class="row">
+                <span>Ведомое дыхание<small>Вдох 4 с, выдох 6 с. Звук дышит вместе с кругом.</small></span>
+                <span class="switch"><input type="checkbox" id="breathe" autocomplete="off" aria-label="Ведомое дыхание"><i></i></span>
+              </div>
+              <div class="row">
+                <span>Бинаурально<small>Разные тоны в каждое ухо, только в наушниках. Обычные биения действуют на мозг сильнее.</small></span>
+                <span class="switch"><input type="checkbox" id="binaural" autocomplete="off" aria-label="Бинаурально"><i></i></span>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- ===== Видения ===== -->
+        <div class="panel" id="panel-ganz" hidden>
+          <div class="group">
+            <div class="group-h"><h3>Свет</h3></div>
+            <div class="levels" role="radiogroup" aria-label="Свет">
+              <div class="level"><input type="radio" name="gprog" id="gp-cycle" value="cycle"><label for="gp-cycle">
+                <span class="lv-top"><span class="swatch" style="background: conic-gradient(#e2483a, #ef8a3c, #8c4fc4, #4b6ee0, #e2483a)"></span><b>Смена цветов</b></span>
+                <span class="sub">Красный, оранжевый, фиолетовый, синий — по нескольку минут</span>
+              </label></div>
+              <div class="level"><input type="radio" name="gprog" id="gp-red" value="red"><label for="gp-red">
+                <span class="lv-top"><span class="swatch" style="background: #e2483a"></span><b>Красный</b></span>
+                <span class="sub">Классика метода</span>
+              </label></div>
+              <div class="level"><input type="radio" name="gprog" id="gp-blue" value="blue"><label for="gp-blue">
+                <span class="lv-top"><span class="swatch" style="background: #4b6ee0"></span><b>Синий</b></span>
+                <span class="sub">Холоднее и спокойнее</span>
+              </label></div>
+            </div>
+          </div>
+
+          <div class="group">
+            <div class="group-h"><label for="gvol">Громкость</label><span class="val" id="gvol-val"></span></div>
+            <input type="range" id="gvol" min="0" max="100" step="1" value="18">
+          </div>
+
+          <details class="settings" id="set-ganz">
+            <summary><b>Настройки</b><span class="sum" id="sum-ganz"></span></summary>
+            <div class="settings-body">
+              <div class="group">
+                <div class="group-h"><h3>Звук</h3></div>
+                <div class="chips" role="radiogroup" aria-label="Звук">
+                  <input type="radio" name="gnoise" id="gn-brown" value="brown"><label for="gn-brown">Шум волн</label>
+                  <input type="radio" name="gnoise" id="gn-white" value="white"><label for="gn-white">Белый шум</label>
+                  <input type="radio" name="gnoise" id="gn-none" value="none"><label for="gn-none">Тишина</label>
+                </div>
+                <p class="hint">«Шум волн» — ровный низкий шум в наушниках, похожий на прибой. С ним слуховые видения появлялись чаще всего, обычно что-то про воду.</p>
+              </div>
+              <div class="group">
+                <div class="group-h"><h3>Длительность</h3></div>
+                <div class="chips" role="radiogroup" aria-label="Длительность">
+                  <input type="radio" name="gdur" id="g10" value="10"><label for="g10">10</label>
+                  <input type="radio" name="gdur" id="g15" value="15"><label for="g15">15</label>
+                  <input type="radio" name="gdur" id="g25" value="25"><label for="g25">25</label>
+                </div>
+                <p class="hint">В исследовании — 25 минут. Видения обычно появляются не сразу.</p>
+              </div>
+              <div class="group">
+                <div class="group-h"><label for="gbright">Яркость</label><span class="val" id="gbright-val"></span></div>
+                <input type="range" id="gbright" min="10" max="100" step="1" value="45">
+                <p class="hint">Достаточно мягкого света. Цвет меняется плавно, без мерцания.</p>
+                <p class="hint">Сильнее всего работает, если разрезать шарик для пинг-понга пополам и надеть половинки на глаза: свет зальёт всё поле зрения, как в лаборатории.</p>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== История ===== -->
+  <div class="history" id="view-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+    <div class="nums">
+      <div class="num"><b id="n-streak">0</b><span id="l-streak">дней подряд</span></div>
+      <div class="num"><b id="n-week">0</b><span id="l-week">минут за 7 дней</span></div>
+      <div class="num"><b id="n-total">0</b><span id="l-total">сеансов всего</span></div>
+    </div>
+    <div class="days-wrap">
+      <p class="label-sm">Минуты по дням</p>
+      <div class="days" id="days"></div>
+      <div class="legend"><span style="--c: var(--g2)">Очистка</span><span style="--c: var(--g1)">Отдых</span><span style="--c: var(--g3)">Видения</span></div>
+    </div>
+    <ul class="list" id="list"></ul>
+    <p class="empty" id="empty">Пока пусто. Здесь будет каждый сеанс: режим, длительность, самочувствие и что вы видели.</p>
+    <div class="hist-foot"><button class="btn" id="clear" hidden>Очистить историю</button></div>
+  </div>
+
+  <!-- ===== О методе ===== -->
+  <div class="about" id="view-about" role="tabpanel" aria-labelledby="tab-about" hidden>
+    <div class="sum-cards">
+      <div class="sum-card">
+        <h3>Очистка</h3>
+        <p>Ритм 40 Гц заставляет кору работать в такт. У мышей это ускоряло вывод амилоида из мозга.</p>
+        <dl><dt>Доказано</dt><dd>на мышах; у людей идут испытания</dd><dt>Для чего</dt><dd>эксперимент на себе, не лечение</dd></dl>
+        <button class="more" data-goto="about-gamma">Подробнее →</button>
+      </div>
+      <div class="sum-card">
+        <h3>Отдых</h3>
+        <p>Дыхание 6 раз в минуту и биения в ритме альфа, тета или дельта-волн.</p>
+        <dl><dt>Доказано</dt><dd>дыхание — надёжно; биения — слабо</dd><dt>Для чего</dt><dd>успокоиться, заснуть</dd></dl>
+        <button class="more" data-goto="about-relax">Подробнее →</button>
+      </div>
+      <div class="sum-card">
+        <h3>Видения</h3>
+        <p>Однородный свет и шум лишают мозг деталей, и он начинает дорисовывать сам.</p>
+        <dl><dt>Доказано</dt><dd>видения у 89–96% участников</dd><dt>Для чего</dt><dd>необычный опыт, не лечение</dd></dl>
+        <button class="more" data-goto="about-ganz">Подробнее →</button>
+      </div>
+    </div>
+
+    <article class="doc">
+      <section id="about-gamma">
+        <p class="label-sm">Очистка</p>
+        <h2>Гамма-стимуляция 40 Гц</h2>
+        <p class="lead">Метод GENUS придумали в лаборатории Ли-Хуэй Цай (MIT). Если 40 раз в секунду давать вспышку или звук, зрительная и слуховая кора начинают отвечать в этом ритме. При болезни Альцгеймера этот ритм ослаблен.</p>
+        <p>У мышей ежедневный час света и звука 40 Гц ускорял ток жидкости через мозг, и она уносила амилоид (Murdock и соавт., Nature, 2024). У людей пилотные исследования показали, что метод безопасен. Большое исследование HOPE ещё идёт, одобренного лечения нет.</p>
+        <details><summary>Что именно показали опыты</summary><div>
+          <p>VIP-интернейроны усиливают пульсацию артерий, жидкость прокачивается сильнее. На астроцитах выстраивается аквапорин-4, расширяются лимфатические сосуды оболочек мозга. Когда аквапорин-4 блокировали, очистка пропадала. Частоты 8 и 80 Гц не работали.</p>
+          <p>У людей (Chan и соавт., 2022) ежедневные сеансы не дали серьёзных побочных эффектов, чаще всего жаловались на сонливость. Исследование HOPE (Cognito Therapeutics): очки и наушники, час в день, около 670 участников.</p>
+        </div></details>
+        <details><summary>Почему три уровня</summary><div>
+          <p>Сильнее всего мозг отвечает на резкое мигание, но от него и тошнит чаще. Мягкий свет переносится легче, хотя действует слабее. В одной работе с малой глубиной мерцания ответа на ЭЭГ не нашли вовсе.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th></th><th>Мягкий</th><th>Средний</th><th>Протокол</th></tr></thead>
+            <tbody>
+              <tr><td>Звук</td><td>тёплый тон 400 Гц</td><td>аккорд</td><td>импульсы 10 кГц по 1 мс</td></tr>
+              <tr><td>Свет</td><td>нет</td><td>плавный, тусклый, тёплый</td><td>12,5 мс вспышка / 12,5 мс темнота</td></tr>
+              <tr><td>Время</td><td>15 мин, до 30</td><td>20 мин, до 45</td><td>30 мин, до 60</td></tr>
+            </tbody>
+          </table></div>
+          <p>По умолчанию стоит «Протокол» — самый близкий к исследованиям. Если от мигания нехорошо, переходите на «Средний» или «Мягкий». Если после сеанса ответить «плохо», приложение само переключит уровень ниже.</p>
+        </div></details>
+        <details><summary>Почему мягкий звук работает</summary><div>
+          <p>Импульсы 10 кГц пришли из опытов на мышах: мыши хорошо слышат высокие частоты. Человеческая кора сильнее отвечает на низкий тон с пульсом 40 Гц. При 250 Гц ответ примерно втрое больше, чем при 4000 Гц.</p>
+          <p>Музыку со встроенными 40 Гц слушали охотнее, чем чистый тон (около 80% против 57% дослушавших), а эффект был похожий. Это предварительные данные (Johns Hopkins, 2026).</p>
+        </div></details>
+        <details><summary>Как устроено внутри</summary><div>
+          <p>Звук синтезируется прямо в браузере. Отрезок ровно в 40 периодов повторяется по кругу, поэтому шаг 25 мс держится с точностью до сэмпла. Каждый кадр экрана сверяется с часами звуковой карты, и пик вспышки совпадает с пиком звука.</p>
+          <p>Ровно 40 вспышек в секунду получаются на экранах 80, 120 и 240 Гц. На 60 Гц не получится, приложение об этом предупредит.</p>
+        </div></details>
+      </section>
+
+      <section id="about-relax">
+        <p class="label-sm">Отдых</p>
+        <h2>Альфа, тета, дельта</h2>
+        <p class="lead">Альфа (8–12 Гц) — спокойствие с закрытыми глазами. Тета (4–8 Гц) — глубокая медитация. Дельта (0,5–4 Гц) — глубокий сон. Идея в том, что мозг подстраивается под звуковой ритм.</p>
+        <p>Надёжнее всего здесь работает дыхание. Медленный вдох и длинный выдох замедляют пульс и быстро успокаивают. Биения — приятное дополнение, доказательства у них слабые.</p>
+        <details><summary>Что говорят исследования о биениях</summary><div>
+          <ul>
+            <li>В обзоре ЭЭГ-работ 2023 года подстройку мозга подтвердили около 5 исследований из 14.</li>
+            <li>Обычные биения, одинаковые в обоих ушах, действуют на мозг сильнее бинауральных (Orozco Perez и соавт., 2020). Поэтому бинауральный вариант выключен по умолчанию.</li>
+            <li>Пять минут биений на 6 и 10 Гц снижали тревогу сильнее контрольного звука (Chaieb и соавт., 2017). Исследование небольшое.</li>
+          </ul>
+        </div></details>
+        <details><summary>Как сделан звук</summary><div>
+          <p>Два близких тона, например 200 и 210 Гц, звучат вместе. Их сумма плавно нарастает и стихает 10 раз в секунду, это и есть биение. Под ним тихо звучат октава ниже и квинта, чтобы получился тёплый фон.</p>
+        </div></details>
+        <details><summary>Дельта и очистка во сне</summary><div>
+          <p>Сильнее всего мозг очищается во сне, на медленных дельта-волнах (Xie и соавт., 2013; Fultz и соавт., 2019). В 2026 году в MIT усилили эти волны короткими звуками точно в такт им, но для этого нужна ЭЭГ. Телефон так не умеет, поэтому дельта-режим помогает заснуть, а не стимулирует сам сон: 5 минут дыхания, потом ровное биение, экран гаснет, звук плавно стихает.</p>
+        </div></details>
+      </section>
+
+      <section id="about-ganz">
+        <p class="label-sm">Видения</p>
+        <h2>Ганцфельд</h2>
+        <p class="lead">«Ганцфельд» по-немецки — «целое поле». Если глаз видит только ровный цвет без деталей, а уши — только ровный шум, мозгу не за что зацепиться, и он начинает дорисовывать сам.</p>
+        <p>Почти все что-то видят: узоры, пятна, фигуры, иногда целые сцены. Это не лечение, а способ увидеть, как мозг достраивает реальность.</p>
+        <details><summary>Что показало исследование</summary><div>
+          <p>В 2025 году Pistolas, Smets и Wagemans провели три эксперимента, всего 140 человек. Участники 25 минут смотрели в однородный цветной свет. Зрительные видения отметили 89–96%, слуховые — около четверти. С коричневым шумом слуховые видения были чаще, обычно что-то про воду и волны. О побочных эффектах не сообщалось.</p>
+        </div></details>
+        <details><summary>Как устроен сеанс</summary><div>
+          <p>Как в исследовании: красный, оранжевый, снова красный, фиолетовый, синий. Каждый цвет держится пятую часть сеанса, переходы плавные, по 15 секунд. Мерцания нет. Ganzflicker, вариант с мерцанием, я не использую: он мигает на частотах, опасных при эпилепсии.</p>
+          <p>Экран телефона не закрывает всё поле зрения, поэтому эффект слабее лабораторного. Классический способ это исправить — половинки шарика для пинг-понга на глазах: они рассеивают свет в ровное поле.</p>
+          <p>После сеанса можно записать, что вы видели. Запись сохранится в истории.</p>
+        </div></details>
+        <details><summary>Кому не стоит</summary><div>
+          <p>Участников исследования заранее спрашивали о неврологических и психических диагнозах. Не используйте режим, если у вас были психозы, галлюцинации или тяжёлая тревога. Если станет не по себе, просто откройте глаза: всё проходит сразу.</p>
+        </div></details>
+      </section>
+
+      <section id="about-safety">
+        <p class="label-sm">Для всех режимов</p>
+        <h2>Безопасность</h2>
+        <p class="callout">Это не медицинское изделие. Оно ничего не лечит и не предотвращает.</p>
+        <ul>
+          <li>Мигание в «Очистке» может вызвать приступ при фоточувствительной эпилепсии. Если у вас или кровных родственников были эпилепсия или судороги, а также при мигрени с аурой, свет не включайте.</li>
+          <li>При головокружении, тошноте, головной боли или спутанности сразу остановите сеанс. Касание экрана сразу гасит свет.</li>
+          <li>Не используйте за рулём и при работе с техникой.</li>
+        </ul>
+      </section>
+
+      <section id="about-other">
+        <p class="label-sm">Для любопытных</p>
+        <details><summary>Что ещё изучено про звук и свет</summary><div>
+          <ul>
+            <li><b>Шум для внимания при СДВГ.</b> Метаанализ 2024 года: белый и розовый шум немного улучшают выполнение задач у людей с СДВГ, но у остальных — немного ухудшают.</li>
+            <li><b>Музыка с вырезанной частотой при звоне в ушах.</b> Данные противоречивые: один метаанализ не нашёл преимущества перед обычной музыкой, другой нашёл.</li>
+            <li><b>Звуки в такт волнам сна.</b> Работают, но только с ЭЭГ в реальном времени (MIT, 2026).</li>
+          </ul>
+        </div></details>
+        <details><summary>Источники</summary><div>
+          <ol>
+            <li>Murdock M.H. et al. Multisensory gamma stimulation promotes glymphatic clearance of amyloid. <i>Nature</i> 627 (2024). <a href="https://doi.org/10.1038/s41586-024-07132-6" target="_blank" rel="noopener">doi:10.1038/s41586-024-07132-6</a></li>
+            <li>Chan D. et al. Gamma frequency sensory stimulation in mild probable Alzheimer’s dementia patients. <i>PLOS ONE</i> (2022). <a href="https://doi.org/10.1371/journal.pone.0278412" target="_blank" rel="noopener">doi:10.1371/journal.pone.0278412</a></li>
+            <li>Agger M.P. et al. 40 Hz invisible spectral flicker. <i>J. Alzheimer’s Disease</i> (2022). <a href="https://doi.org/10.3233/JAD-220081" target="_blank" rel="noopener">doi:10.3233/JAD-220081</a></li>
+            <li>Picton T.W. et al. Frequency specificity of 40-Hz auditory steady-state responses. <a href="https://researchgate.net/profile/Terence-Picton/publication/8593375_Frequency_specificity_of_40-Hz_auditory_steady-state_responses/links/6641358208aa54017a054133/Frequency-specificity-of-40-Hz-auditory-steady-state-responses.pdf" target="_blank" rel="noopener">PDF</a></li>
+            <li>Gamma music. <i>Frontiers in Human Neuroscience</i> (2023). <a href="https://doi.org/10.3389/fnhum.2023.1287018" target="_blank" rel="noopener">doi:10.3389/fnhum.2023.1287018</a></li>
+            <li>40 Hz music for MCI, Johns Hopkins, AAIC 2026. <a href="https://www.mdlinx.com/article/a-playlist-with-a-purpose-40-hz-music-shows-promise-for-mci/1EqAWamgRrjLLkd7Yz8oJo" target="_blank" rel="noopener">MDLinx</a></li>
+            <li>Orozco Perez H.D. et al. Binaural beats through the auditory pathway. <i>eNeuro</i> (2020). <a href="https://www.eneuro.org/content/eneuro/7/2/ENEURO.0232-19.2020.full.pdf" target="_blank" rel="noopener">PDF</a></li>
+            <li>Chaieb L. et al. Auditory beat stimulation and its effects on cognition and mood states. <i>Frontiers in Human Neuroscience</i> (2017). <a href="https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2017.00251/full" target="_blank" rel="noopener">frontiersin.org</a></li>
+            <li>Систематический обзор бинауральных биений. <i>Revista Mexicana de Neurociencia</i> (2021). <a href="https://www.scielo.org.mx/pdf/rmn/v22n6/2604-6180-rmn-22-6-238.pdf" target="_blank" rel="noopener">PDF</a></li>
+            <li>Zaccaro A. et al. How breath-control can change your life. <i>Frontiers in Human Neuroscience</i> (2018). <a href="https://doi.org/10.3389/fnhum.2018.00353" target="_blank" rel="noopener">doi:10.3389/fnhum.2018.00353</a></li>
+            <li>Xie L. et al. Sleep drives metabolite clearance from the adult brain. <i>Science</i> (2013). <a href="https://doi.org/10.1126/science.1241224" target="_blank" rel="noopener">doi:10.1126/science.1241224</a></li>
+            <li>Fultz N.E. et al. Coupled electrophysiological, hemodynamic, and CSF oscillations in human sleep. <i>Science</i> (2019). <a href="https://doi.org/10.1126/science.aax5440" target="_blank" rel="noopener">doi:10.1126/science.aax5440</a></li>
+            <li>Levitt J., Lewis L. et al. Closed-loop auditory stimulation enhances CSF flow. <i>Sci. Transl. Med.</i> (2026). <a href="https://news.mit.edu/2026/pink-noise-burst-may-mean-more-restorative-sleep-0909" target="_blank" rel="noopener">MIT News</a></li>
+            <li>Pistolas E., Smets L., Wagemans J. Wave after wave: multisensory hallucinations under multimodal Ganzfeld stimulation. <i>i-Perception</i> 16(5) (2025). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12457770/" target="_blank" rel="noopener">PMC12457770</a></li>
+            <li>Nigg J.T. et al. White or pink noise for ADHD: meta-analysis. <i>JAACAP</i> (2024). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11283987/" target="_blank" rel="noopener">PMC11283987</a></li>
+            <li>Notched music for tinnitus, meta-analyses 2024–2025. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10727622/" target="_blank" rel="noopener">PMC10727622</a></li>
+          </ol>
+        </div></details>
+      </section>
+    </article>
+  </div>
+
+  <footer>Не медицинское изделие. Что доказано, а что нет — во вкладке «О методе».</footer>
+</main>
+
+<div class="flicker" id="flicker" hidden>
+  <div class="overlay-ui" id="flicker-ui"><span>Касание экрана — стоп</span><button id="flicker-stop">Стоп</button></div>
+</div>
+<div class="ganz" id="ganz" hidden>
+  <div class="overlay-ui solo" id="ganz-ui">Касание или Esc — пауза</div>
+</div>
+<div class="dim" id="dim" hidden><i id="dim-dot"></i><p>Коснитесь, чтобы вернуть экран</p></div>
+
+<dialog class="warn" id="warn" aria-labelledby="warn-h">
+  <div class="dlg">
+    <h2 id="warn-h">Мерцающий свет</h2>
+    <p>Экран будет мерцать 40 раз в секунду. При фоточувствительной эпилепсии это может вызвать приступ, даже если раньше приступов не было. У остальных возможны головокружение, тошнота и головная боль.</p>
+    <p>Не включайте свет, если у вас или кровных родственников были эпилепсия или судороги. Любое касание экрана сразу останавливает сеанс.</p>
+    <label class="check"><input type="checkbox" id="warn-ok"> Я прочитал(а) предупреждение, эпилепсии и судорог у меня не было</label>
+    <div class="dlg-actions">
+      <button type="button" class="btn" id="warn-no">Без света</button>
+      <button type="button" class="btn primary" id="warn-yes" disabled>Включить свет</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  const F = 40;
+  const BREATH = { inhale: 4, exhale: 6 };       // секунды; 6 вдохов в минуту
+  const CYCLE = BREATH.inhale + BREATH.exhale;
+  const GUIDE = 300, GUIDE_FADE = 60, SLEEP_FADE = 300;  // дельта: 5 мин дыхания, минута перехода, 5 мин затухания
+  const GANZ_XFADE = 15;                                 // переход между цветами, с
+  const $ = (s) => document.querySelector(s);
+
+  const MODES = {
+    gamma: { title: 'Очистка', lead: 'Звук и свет 40 раз в секунду, как в протоколе MIT. Если станет нехорошо — переключитесь на уровень слабее.' },
+    relax: { title: 'Отдых', lead: 'Дышите вслед за кругом. Биения в ритме мозговых волн звучат фоном.' },
+    ganz:  { title: 'Видения', lead: 'Затемните комнату и лягте. Держите телефон в 15–20 см над лицом, глаза полуприкрыты. Смотрите в цвет и ничего не ищите — картины придут сами.' },
+  };
+
+  // Уровни очистки. Длительность по умолчанию — рекомендация; пользователь меняет её в пределах maxDur.
+  const LEVELS = {
+    1: { sound: 'tone',  light: null,     soundRamp: 5, lightRamp: 0,  dur: 15, maxDur: 30 },
+    2: { sound: 'chord', light: 'sine',   soundRamp: 5, lightRamp: 30, dur: 20, maxDur: 45, depth: 0.35 },
+    3: { sound: 'burst', light: 'square', soundRamp: 3, lightRamp: 15, dur: 30, maxDur: 60, depth: 1 },
+  };
+  const SOUNDS = {
+    tone:  { name: 'тёплый тон',      hint: 'Тон 400 Гц, громкость пульсирует 40 раз в секунду. Самый мягкий вариант.' },
+    chord: { name: 'аккорд',          hint: 'Соль мажор с пульсом 40 Гц. Похоже на орган.' },
+    burst: { name: 'импульсы 10 кГц', hint: 'Точный протокол MIT: импульс 1 мс каждые 25 мс. Звучит резко, начинайте тихо.' },
+  };
+  // Отдых: несущая и частота биения. Все частоты целые — буфер длиной 1 с замыкается без стыка.
+  const RKINDS = {
+    alpha: { name: 'альфа 10 Гц', beat: 10, carrier: 200, dur: 10, durs: [5, 10, 15, 20], sleep: false, note: 'Сядьте, закройте глаза. Круг растёт — вдох, сжимается — выдох.' },
+    theta: { name: 'тета 6 Гц',   beat: 6,  carrier: 180, dur: 15, durs: [10, 15, 20, 30], sleep: false, note: 'Лучше лёжа, с закрытыми глазами. Дышите вслед за кругом.' },
+    delta: { name: 'дельта 2 Гц', beat: 2,  carrier: 150, dur: 30, durs: [20, 30, 45, 60], sleep: true,  note: '5 минут дыхания, потом экран гаснет и звук плавно уходит.' },
+  };
+  // Видения: цвета и программы (последовательность как в Pistolas et al., 2025).
+  const GCOLORS = { red: [226, 72, 58], orange: [239, 138, 60], purple: [140, 79, 196], blue: [75, 110, 224] };
+  const GPROGS = {
+    cycle: { name: 'смена цветов', seq: ['red', 'orange', 'red', 'purple', 'blue'] },
+    red:   { name: 'красный',      seq: ['red'] },
+    blue:  { name: 'синий',        seq: ['blue'] },
+  };
+  const GNOISE = { brown: 'шум волн', white: 'белый шум', none: 'тишина' };
+  const GCOLOR_NAMES = { red: 'красный', orange: 'оранжевый', purple: 'фиолетовый', blue: 'синий' };
+
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+    del(k) { try { localStorage.removeItem(k); } catch {} },
+  };
+
+  const prefs = Object.assign({
+    level: 3, dur: 30, light: true, vol: 20, bright: 60, sound: 'tone',
+    rkind: 'alpha', rdur: 10, rvol: 18, breathe: true,
+    gprog: 'cycle', gnoise: 'brown', gdur: 15, gvol: 18, gbright: 45,
+  }, store.get('g40.prefs4', {}));
+  if (!prefs.v5) { prefs.v5 = true; prefs.level = 3; prefs.dur = 30; prefs.sound = 'burst'; prefs.light = true; }
+  if (!LEVELS[prefs.level]) prefs.level = 1;
+  if (!SOUNDS[prefs.sound]) prefs.sound = LEVELS[prefs.level].sound;
+  if (!RKINDS[prefs.rkind]) prefs.rkind = 'alpha';
+  if (!GPROGS[prefs.gprog]) prefs.gprog = 'cycle';
+  if (!GNOISE[prefs.gnoise]) prefs.gnoise = 'brown';
+  if (![10, 15, 25].includes(prefs.gdur)) prefs.gdur = 15;
+  prefs.binaural = false;  // бинаурально — только осознанно, на один раз; при открытии всегда выключено
+  if (prefs.dur > LEVELS[prefs.level].maxDur || !document.getElementById('d' + prefs.dur)) prefs.dur = LEVELS[prefs.level].dur;
+  if (!RKINDS[prefs.rkind].durs.includes(prefs.rdur)) prefs.rdur = RKINDS[prefs.rkind].dur;
+
+  // view: какой экран открыт; S: снимок параметров на время сеанса (менять настройки во время сеанса нельзя).
+  let view = 'home';
+  const S = { running: false, paused: false, base: 0, startedISO: null, t0: 0, lightT0: 0, total: 0, mode: 'gamma', level: 1, light: false, sound: 'tone', rkind: 'alpha', binaural: false, breathe: true, gprog: 'cycle', gnoise: 'brown', lastId: null };
+  let ctx = null, gain = null, live = [];
+  const buffers = {};
+
+  const lv = () => LEVELS[prefs.level];
+  const lightActive = () => !!lv().light && prefs.light;
+  const cfgMode = () => S.running ? S.mode : view;
+
+  // ---------- звук ----------
+  // Буфер очистки — 1 с, ровно 40 периодов; петля держит 40 Гц с точностью до сэмпла.
+  // Модулированные звуки: 100% синусоидальная АМ, пик огибающей на фазе 0,25 — в центре вспышки света.
+  const amEnv = (t) => 0.5 + 0.5 * Math.cos(2 * Math.PI * (F * t - 0.25));
+  function noise(d, kind) {
+    // Длина + хвост для перекрёстного стыка: конец петли плавно переходит в начало.
+    const x = Math.round(d.length / 200), n = d.length + x, tmp = new Float32Array(n);
+    let seed = 12345, b = 0, peak = 0;
+    for (let j = 0; j < n; j++) {
+      seed = (seed * 16807) % 2147483647;
+      const w = seed / 1073741823.5 - 1;
+      if (kind === 'brown') { b = (b + 0.02 * w) / 1.02; tmp[j] = b; } else tmp[j] = w;
+      peak = Math.max(peak, Math.abs(tmp[j]));
+    }
+    for (let j = 0; j < d.length; j++) d[j] = tmp[j] / peak;
+    for (let j = 0; j < x; j++) { const k = j / x; d[j] = d[j] * k + (tmp[d.length + j] / peak) * (1 - k); }
+  }
+  function makeBuffer(kind) {
+    const sr = ctx.sampleRate;
+    const secs = kind === 'breathEnv' ? CYCLE : kind.startsWith('noise') ? 8 : 1;
+    const len = sr * secs;
+    const stereo = kind.startsWith('beatB:');
+    const buf = ctx.createBuffer(stereo ? 2 : 1, len, sr);
+    const d = buf.getChannelData(0);
+    if (kind === 'tone') {
+      for (let j = 0; j < len; j++) { const t = j / sr; d[j] = 0.45 * (Math.sin(2 * Math.PI * 400 * t) + 0.25 * Math.sin(2 * Math.PI * 800 * t)) * amEnv(t); }
+    } else if (kind === 'chord') {
+      // Целые частоты — в 1 с укладывается целое число периодов, петля без щелчка на стыке.
+      const notes = [196, 247, 294, 392], amps = [1, 0.7, 0.6, 0.35];
+      for (let j = 0; j < len; j++) { const t = j / sr; let v = 0; for (let k = 0; k < 4; k++) v += amps[k] * Math.sin(2 * Math.PI * notes[k] * t); d[j] = 0.3 * v * amEnv(t); }
+    } else if (kind === 'breathEnv') {
+      // Огибающая дыхания вокруг нуля: −0,5 в конце выдоха, +0,5 на вершине вдоха.
+      for (let j = 0; j < len; j++) d[j] = breathShape(j / sr) - 0.5;
+    } else if (kind.startsWith('noise:')) {
+      noise(d, kind.split(':')[1]);
+      const k = kind === 'noise:white' ? 0.35 : 0.8;
+      for (let j = 0; j < len; j++) d[j] *= k;
+    } else if (kind.startsWith('beat')) {
+      // Биение: два близких тона (fc и fc+beat) плюс тихий фон — октава ниже и квинта выше.
+      // Монаурально оба тона в одном канале; бинаурально — по одному в каждое ухо.
+      const r = RKINDS[kind.split(':')[1]], fc = r.carrier, fb = fc + r.beat;
+      const d2 = stereo ? buf.getChannelData(1) : null;
+      for (let j = 0; j < len; j++) {
+        const t = j / sr;
+        const a = Math.sin(2 * Math.PI * fc * t), b = Math.sin(2 * Math.PI * fb * t);
+        const pad = 0.22 * Math.sin(2 * Math.PI * (fc / 2) * t) + 0.1 * Math.sin(2 * Math.PI * (fc * 1.5) * t);
+        if (stereo) { d[j] = 0.45 * a + pad; d2[j] = 0.45 * b + pad; }
+        else d[j] = 0.32 * (a + b) + pad;
+      }
+    } else {
+      const n = Math.round(sr * 0.001), ramp = Math.max(2, Math.round(sr * 0.00012));
+      for (let i = 0; i < F; i++) {
+        const s0 = Math.round(i * sr / F);
+        for (let j = 0; j < n; j++) {
+          let env = 1;
+          if (j < ramp) env = 0.5 - 0.5 * Math.cos(Math.PI * j / ramp);
+          else if (j > n - ramp) env = 0.5 - 0.5 * Math.cos(Math.PI * (n - j) / ramp);
+          d[s0 + j] = 0.9 * env * Math.sin(2 * Math.PI * 10000 * j / sr);
+        }
+      }
+    }
+    return buf;
+  }
+  const bufferFor = (kind) => buffers[kind] || (buffers[kind] = makeBuffer(kind));
+
+  // 0..1: плавный подъём на вдохе, плавный спад на выдохе.
+  function breathShape(t) {
+    const p = ((t % CYCLE) + CYCLE) % CYCLE;
+    return p < BREATH.inhale ? 0.5 - 0.5 * Math.cos(Math.PI * p / BREATH.inhale) : 0.5 + 0.5 * Math.cos(Math.PI * (p - BREATH.inhale) / BREATH.exhale);
+  }
+  const isSleep = () => S.mode === 'relax' && RKINDS[S.rkind].sleep;
+  // Насколько дыхание ещё ведёт (дельта: 1 → 0 после пятой минуты).
+  function guideAt(e) {
+    if (S.mode !== 'relax' || !S.breathe) return 0;
+    if (!isSleep() || e <= GUIDE) return 1;
+    return Math.max(0, 1 - (e - GUIDE) / GUIDE_FADE);
+  }
+  function fadeAt(e) {
+    if (!isSleep()) return 1;
+    const start = S.total - SLEEP_FADE;
+    return e <= start ? 1 : Math.max(0, (S.total - e) / SLEEP_FADE);
+  }
+  // Цвет Ганцфельда в момент e: держим цвет, на границе отрезков — плавный переход.
+  function ganzColor(e) {
+    const seq = GPROGS[S.gprog].seq, seg = S.total / seq.length;
+    const i = Math.min(seq.length - 1, Math.floor(e / seg));
+    const a = GCOLORS[seq[i]];
+    const into = e - (i + 1) * seg + GANZ_XFADE / 2;
+    if (i < seq.length - 1 && into > 0) {
+      const b = GCOLORS[seq[i + 1]], k = Math.min(1, into / GANZ_XFADE);
+      return a.map((v, c) => v + (b[c] - v) * k);
+    }
+    return a.slice();
+  }
+
+  // «Протокол»: старт на выбранной громкости, за первую минуту плавно +6 пунктов.
+  const BOOST = 6, BOOST_T = 60;
+  const boosted = () => S.mode === 'gamma' && S.level === 3;
+  const volGain = (e) => {
+    let v = S.mode === 'relax' ? prefs.rvol : S.mode === 'ganz' ? prefs.gvol : prefs.vol;
+    if (boosted()) v = Math.min(100, v + BOOST * Math.min(1, (e || 0) / BOOST_T));
+    return Math.pow(v / 100, 2) * (S.mode === 'gamma' ? 0.85 : 0.9);
+  };
+  // Расписание громкости от момента at (звуковое время), когда прошло e секунд сеанса.
+  function scheduleVol(at, e) {
+    const g = gain.gain;
+    if (boosted() && e < BOOST_T) g.linearRampToValueAtTime(volGain(BOOST_T), at + BOOST_T - e);
+  }
+
+  function ensureCtx() {
+    if (ctx) return;
+    // iOS: без этого Web Audio молчит при включённом беззвучном режиме.
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {}
+    ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+    gain = ctx.createGain();
+    gain.gain.value = 0;
+    gain.connect(ctx.destination);
+    // Система забрала звук (звонок, блокировка) — ставим на паузу, а не считаем время в тишине.
+    ctx.addEventListener('statechange', () => { if (ctx.state !== 'running' && S.running && !S.paused && live.length) pause('Звук прервала система. Сеанс на паузе.'); });
+  }
+
+  function loopSrc(kind, dest, at, offset) {
+    const s = ctx.createBufferSource();
+    s.buffer = bufferFor(kind);
+    s.loop = true;
+    s.connect(dest);
+    s.start(at, offset || 0);
+    live.push(s);
+    return s;
+  }
+
+  async function startAudio(ramp) {
+    ensureCtx();
+    await ctx.resume();
+    if (!S.running || S.paused || live.length) return;
+    const t0 = ctx.currentTime + 0.1, b = S.base;
+    S.t0 = t0;
+    const g = gain.gain;
+    g.cancelScheduledValues(0);
+    g.setValueAtTime(0.0001, t0);
+    g.linearRampToValueAtTime(volGain(b + ramp), t0 + ramp);
+    scheduleVol(t0 + ramp, b + ramp);
+    if (S.mode === 'gamma') {
+      // Каждый буфер начинается с фазы 0 и содержит целое число периодов, поэтому смещение не нужно.
+      loopSrc(S.sound, gain, t0);
+      return;
+    }
+    if (S.mode === 'ganz') {
+      // Тишина — всё равно запускаем беззвучный источник: по нему идут часы сеанса.
+      const g2 = ctx.createGain();
+      g2.gain.value = S.gnoise === 'none' ? 0 : 1;
+      g2.connect(gain);
+      loopSrc('noise:' + (S.gnoise === 'white' ? 'white' : 'brown'), g2, t0, b % 8);
+      live.push({ stop() { g2.disconnect(); } });
+      return;
+    }
+    // Отдых: биение → огибающая дыхания → затухание (дельта) → громкость.
+    const fade = ctx.createGain(), env = ctx.createGain(), depth = ctx.createGain();
+    fade.connect(gain);
+    env.connect(fade);
+    fade.gain.setValueAtTime(fadeAt(b), t0);
+    if (isSleep()) {
+      const fs = S.total - SLEEP_FADE;
+      if (b < fs) fade.gain.setValueAtTime(1, t0 + fs - b);
+      fade.gain.linearRampToValueAtTime(0, t0 + S.total - b);
+    }
+    loopSrc((S.binaural ? 'beatB:' : 'beat:') + S.rkind, env, t0, b % 1);
+    // Огибающая 0.82 ± 0.18 на вдохе/выдохе; после ведения ровно 0.82.
+    env.gain.value = 0.82;
+    depth.gain.setValueAtTime(0.36 * guideAt(b), t0);
+    if (isSleep() && S.breathe) {
+      if (b < GUIDE) depth.gain.setValueAtTime(0.36, t0 + GUIDE - b);
+      if (b < GUIDE + GUIDE_FADE) depth.gain.linearRampToValueAtTime(0, t0 + GUIDE + GUIDE_FADE - b);
+    }
+    depth.connect(env.gain);
+    loopSrc('breathEnv', depth, t0, b % CYCLE);
+    live.push({ stop() { env.disconnect(); depth.disconnect(); fade.disconnect(); } });
+  }
+
+  function stopAudio() {
+    if (!live.length) return;
+    const now = ctx.currentTime, g = gain.gain;
+    g.cancelScheduledValues(0);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(0.0001, now + 0.05);
+    const nodes = live;
+    live = [];
+    // Часы стоят (iOS прервал звук) — расписание не сработает, останавливаем сразу.
+    if (ctx.state !== 'running') { g.cancelScheduledValues(0); g.value = 0; nodes.forEach((n) => { try { n.stop(); } catch {} }); return; }
+    // Источники останавливаем по расписанию, узлы отключаем после затухания, чтобы не было щелчка.
+    nodes.forEach((n) => { if (n.start) { try { n.stop(now + 0.06); } catch {} } });
+    setTimeout(() => nodes.forEach((n) => { if (!n.start) n.stop(); }), 120);
+  }
+
+  // Пока звук не нужен, усыпляем аудио: телефон не тратит батарею на тишину.
+  function idleAudio() { setTimeout(() => { if (ctx && !live.length && ctx.state === 'running') ctx.suspend().catch(() => {}); }, 300); }
+
+  const elapsed = () => {
+    if (!S.running) return 0;
+    if (S.paused || !live.length) return S.base;
+    return S.base + Math.max(0, ctx.currentTime - S.t0);
+  };
+
+  // ---------- сеанс ----------
+  let lastSaved = 0;
+  const snapshot = () => {
+    const s = { start: S.startedISO, sec: Math.round(Math.min(S.total, elapsed())), planned: S.total, mode: S.mode, beat: Date.now() };
+    if (S.mode === 'gamma') Object.assign(s, { level: S.level, light: S.light, sound: S.sound });
+    if (S.mode === 'relax') Object.assign(s, { rkind: S.rkind, binaural: S.binaural });
+    if (S.mode === 'ganz') Object.assign(s, { gprog: S.gprog, gnoise: S.gnoise });
+    if (S.paused) s.pausedAt = S.pausedAt;
+    return s;
+  };
+  const saveCurrent = () => store.set('g40.current', snapshot());
+
+  function play() {
+    const fresh = !S.running;
+    if (fresh) {
+      S.mode = view;
+      S.base = 0; S.startedISO = new Date().toISOString(); S.running = true; lastSaved = 0; S.light = false;
+      if (S.mode === 'gamma') { S.total = prefs.dur * 60; S.level = prefs.level; S.light = lightActive(); S.sound = prefs.sound; }
+      if (S.mode === 'relax') { S.total = prefs.rdur * 60; S.rkind = prefs.rkind; S.binaural = prefs.binaural; S.breathe = prefs.breathe; }
+      if (S.mode === 'ganz')  { S.total = prefs.gdur * 60; S.gprog = prefs.gprog; S.gnoise = prefs.gnoise; }
+      $('#feel').hidden = true; $('#vision').hidden = true;
+    }
+    S.paused = false;
+    if (S.light) showOverlay(flick, fui);
+    if (S.mode === 'ganz') showOverlay(ganz, gui);
+    wake();
+    render();
+    if (S.mode === 'gamma') setNote(fresh ? 'Сеанс идёт. Если станет неприятно, сразу «Стоп».' : 'Продолжаем.');
+    else if (S.mode === 'relax') setNote(S.breathe ? RKINDS[S.rkind].note : 'Закройте глаза и просто слушайте.');
+    else setNote('Сеанс на паузе продолжится с того же цвета.');
+    if (isSleep()) dimLater(S.breathe && S.base < GUIDE ? (GUIDE - S.base) * 1000 : 20000);
+    const ramp = S.mode === 'gamma' ? (fresh ? LEVELS[S.level].soundRamp : 1) : (fresh ? 5 : 1);
+    startAudio(ramp).catch(() => pause('Браузер не дал включить звук. Нажмите ещё раз.'));
+  }
+
+  function pause(msg) {
+    if (!S.running || S.paused) return;
+    S.base = Math.min(S.total, elapsed());
+    stopAudio();
+    S.paused = true;
+    S.pausedAt = Date.now();
+    hideOverlays(); undim();
+    idleAudio();
+    unwake();
+    saveCurrent();
+    render();
+    setNote(msg || 'Пауза. Таймер стоит.');
+  }
+
+  function finish(done) {
+    if (!S.running) return;
+    const snap = snapshot();
+    stopAudio();
+    hideOverlays(); undim();
+    unwake();
+    idleAudio();
+    store.del('g40.current');
+    S.lastId = snap.sec >= 5 ? logSession(Object.assign(snap, { done })) : null;
+    S.running = false; S.paused = false; S.base = 0;
+    doneShown = done;
+    render();
+    renderStats();
+    if (done) setNote(isSleep() ? 'Спокойной ночи. Сеанс записан.' : 'Сеанс завершён и записан.', 'good');
+    else if (snap.sec >= 5) setNote(`Остановлено на ${fmtDur(snap.sec)}. Записано как прерванный.`);
+    else setNote('Сеанс меньше 5 секунд, в историю не попал.');
+    $('#feel').hidden = !S.lastId || S.mode === 'ganz';
+    $('#vision').hidden = !S.lastId || S.mode !== 'ganz';
+    if (!$('#vision').hidden) $('#vision-text').value = '';
+  }
+
+  function toggle() {
+    if (S.running && !S.paused) return pause();
+    if (!S.running && view === 'gamma' && lightActive()) return requireAck(play, () => { setLight(false); play(); });
+    play();
+  }
+
+  // ---------- полноэкранные слои: мерцание и Ганцфельд ----------
+  const flick = $('#flicker'), fui = $('#flicker-ui'), ganz = $('#ganz'), gui = $('#ganz-ui');
+  let uiTimer = 0, lastLevel = -1, lastGanz = '';
+  function showUiHint(ui) { ui.classList.remove('fade'); clearTimeout(uiTimer); uiTimer = setTimeout(() => ui.classList.add('fade'), 4000); }
+  function showOverlay(el, ui) {
+    el.hidden = false;
+    el.style.backgroundColor = '#000';
+    lastLevel = -1; lastGanz = '';
+    S.lightT0 = 0;
+    showUiHint(ui);
+    if (el.requestFullscreen && !document.fullscreenElement) el.requestFullscreen().catch(() => {});
+  }
+  function hideOverlays() {
+    flick.hidden = true; ganz.hidden = true;
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  }
+  // Слой исчезает на касании; на iOS следующий click может попасть в кнопку под пальцем — гасим его.
+  function swallowClick() {
+    const h = (e) => { e.stopPropagation(); e.preventDefault(); };
+    document.addEventListener('click', h, true);
+    setTimeout(() => document.removeEventListener('click', h, true), 450);
+  }
+  flick.addEventListener('pointerdown', (e) => { e.preventDefault(); swallowClick(); finish(false); });
+  ganz.addEventListener('pointerdown', (e) => { e.preventDefault(); swallowClick(); pause('Пауза. Продолжить можно с того же места.'); });
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) return;
+    if (!flick.hidden) showUiHint(fui);
+    // Escape в полноэкранном режиме браузер забирает себе — выход из полного экрана в «Видениях» = пауза.
+    if (!ganz.hidden && S.running && !S.paused) pause('Пауза. Продолжить можно с того же места.');
+  });
+
+  // Время звука в момент, когда кадр попадёт на экран.
+  function audioTimeAtFrame(now) {
+    const ts = ctx.getOutputTimestamp && ctx.getOutputTimestamp();
+    if (ts && ts.performanceTime > 0 && ts.contextTime > 0) return ts.contextTime + (now - ts.performanceTime) / 1000 + frameMs / 1000;
+    return ctx.currentTime - (ctx.outputLatency || ctx.baseLatency || 0) + frameMs / 1000;
+  }
+
+  // Яркость 0..1. Уровень 3 — прямоугольник 50%; уровень 2 — синусоида малой глубины вокруг тусклого фона. Пик в обоих — фаза 0,25.
+  function lightValue(p, rampK) {
+    const L = LEVELS[S.level];
+    const phase = ((p * F) % 1 + 1) % 1;
+    const peak = prefs.bright / 100;
+    if (L.light === 'square') return phase < 0.5 ? peak * rampK : 0;
+    const mean = 0.3 * peak, depth = L.depth * rampK;
+    return mean * (1 + depth * Math.cos(2 * Math.PI * (phase - 0.25)));
+  }
+  function paintLight(v) {
+    const q = Math.round(v * 255);
+    if (q === lastLevel) return;
+    lastLevel = q;
+    // Уровень 2 — тёплый оттенок, мягче для глаз; уровень 3 — нейтральный белый, как в протоколе.
+    flick.style.backgroundColor = LEVELS[S.level].light === 'sine' ? `rgb(${q},${Math.round(q * 0.86)},${Math.round(q * 0.7)})` : `rgb(${q},${q},${q})`;
+  }
+
+  // ---------- тёмный экран для сна ----------
+  const dim = $('#dim');
+  let dimTimer = 0;
+  function dimLater(ms) { clearTimeout(dimTimer); dimTimer = setTimeout(() => { if (S.running && !S.paused && S.mode === 'relax') dim.hidden = false; }, ms); }
+  function undim() { clearTimeout(dimTimer); dim.hidden = true; }
+  dim.addEventListener('pointerdown', (e) => { e.preventDefault(); swallowClick(); undim(); });
+  $('#dim-btn').addEventListener('click', () => { if (S.running && !S.paused) dim.hidden = false; });
+
+  // ---------- частота экрана ----------
+  const deltas = [];
+  let frameMs = 16.7, prevFrame = 0, hzShownAt = 0;
+  function measure(now) {
+    if (prevFrame) { const dt = now - prevFrame; if (dt > 2 && dt < 60) { deltas.push(dt); if (deltas.length > 120) deltas.shift(); } }
+    prevFrame = now;
+    if (deltas.length > 30) { const s = [...deltas].sort((a, b) => a - b); frameMs = s[s.length >> 1]; }
+    if (deltas.length > 30 && now - hzShownAt > 2000) { hzShownAt = now; showHz(1000 / frameMs); }
+  }
+  function showHz(hz) {
+    const r = Math.round(hz / 10) * 10;
+    let cls, text;
+    if (r >= 80 && r % 40 === 0) { cls = 'good'; text = r === 120 ? 'Ровно 40 вспышек в секунду. На «Протоколе» вспышка занимает 1 или 2 кадра из трёх.' : 'Ровно 40 вспышек в секунду.'; }
+    else if (r >= 80) { cls = 'warn'; text = 'Частота не кратна 40: мерцание будет с лёгким дрожанием. Для точного света лучше внешняя лампа.'; }
+    else { cls = 'bad'; text = 'Экран не может ровно мигать 40 раз в секунду. Используйте звук без света или внешнюю лампу 40 Гц.'; }
+    $('#hz-dot').className = 'dot ' + cls;
+    $('#hz-title').textContent = `Экран ~${r} Гц`;
+    $('#hz-text').textContent = text;
+  }
+
+  // ---------- кадр ----------
+  const C = 2 * Math.PI * 108;
+  const prog = $('#prog'), flow = $('#flow'), status = $('#status'), dimDot = $('#dim-dot');
+  prog.style.strokeDasharray = C;
+  let shownSec = -1, doneShown = false, breathWord = '';
+
+  function frame(now) {
+    measure(now);
+    const active = S.running && !S.paused && live.length > 0;
+    if (active && S.light && !flick.hidden) {
+      const p = audioTimeAtFrame(now) - S.t0;
+      if (p < 0) paintLight(0);
+      else {
+        if (!S.lightT0) S.lightT0 = p;
+        const rampDur = LEVELS[S.level].lightRamp;
+        paintLight(lightValue(p, rampDur ? Math.min(1, (p - S.lightT0) / rampDur) : 1));
+      }
+    }
+    if (active && S.mode === 'ganz' && !ganz.hidden) {
+      // Яркость нарастает за первые 10 секунд, чтобы свет не бил в глаза.
+      const e = elapsed(), k = Math.min(1, e / 10) * prefs.gbright / 100;
+      const css = 'rgb(' + ganzColor(e).map((v) => Math.round(v * k)).join(',') + ')';
+      if (css !== lastGanz) { lastGanz = css; ganz.style.backgroundColor = css; }
+    }
+    let word = '';
+    if (active && S.mode === 'ganz') {
+      const seq = GPROGS[S.gprog].seq, e = elapsed(), seg = S.total / seq.length, i = Math.min(seq.length - 1, Math.floor(e / seg));
+      const left = Math.ceil((i + 1) * seg - e);
+      const next = i < seq.length - 1 ? `смена через ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')} · ` : '';
+      word = GCOLOR_NAMES[seq[i]];
+      const html = `<span>${word[0].toUpperCase() + word.slice(1)}</span><small>${next}${matchMedia('(pointer: coarse)').matches ? 'касание' : 'клик или Esc'} — пауза</small>`;
+      if (gui.dataset.html !== html) { gui.dataset.html = html; gui.innerHTML = html; }
+    }
+    if (active && S.mode === 'relax') {
+      const e = elapsed(), k = guideAt(e), x = breathShape(e);
+      flow.style.transform = `scale(${0.72 + 0.52 * (x - 0.5) * k})`;
+      dimDot.style.transform = `scale(${1 + 1.6 * x * k})`;
+      word = k < 0.05 ? (isSleep() ? 'засыпайте' : 'слушайте') : (((e % CYCLE) + CYCLE) % CYCLE) < BREATH.inhale ? 'вдох' : 'выдох';
+    }
+    if (word !== breathWord) {
+      breathWord = word;
+      if (word) { status.textContent = word; status.classList.add('breath'); }
+      else renderStatus();
+    }
+    drawTime();
+    requestAnimationFrame(frame);
+  }
+
+  const plannedMin = (m) => m === 'relax' ? prefs.rdur : m === 'ganz' ? prefs.gdur : prefs.dur;
+  function drawTime() {
+    const total = S.running ? S.total : plannedMin(cfgMode()) * 60;
+    const e = S.running ? elapsed() : (doneShown ? total : 0);
+    const sec = Math.ceil(Math.max(0, total - e));
+    if (sec !== shownSec) {
+      shownSec = sec;
+      $('#time').textContent = `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+    }
+    prog.style.strokeDashoffset = C * (1 - Math.min(1, e / total));
+  }
+
+  setInterval(() => {
+    if (!S.running || S.paused) return;
+    const e = elapsed();
+    if (e >= S.total) return finish(true);
+    if (e - lastSaved >= 5) { lastSaved = e; saveCurrent(); }
+    if (document.hidden) drawTime();
+  }, 250);
+
+  // ---------- интерфейс ----------
+  const ICON_PLAY = '<path fill="currentColor" d="M8 5.6c0-1.2 1.3-1.9 2.3-1.3l9 6.4c.9.6.9 2 0 2.6l-9 6.4c-1 .7-2.3-.1-2.3-1.3z"></path>';
+  const ICON_PAUSE = '<rect fill="currentColor" x="6" y="5" width="4.5" height="14" rx="1.6"></rect><rect fill="currentColor" x="13.5" y="5" width="4.5" height="14" rx="1.6"></rect>';
+
+  function renderStatus() {
+    if (breathWord) return;
+    const active = S.running && !S.paused;
+    status.classList.remove('breath');
+    status.textContent = active ? 'идёт сеанс' : S.paused ? 'пауза' : doneShown ? 'завершён' : 'готово';
+  }
+
+  // Сводка свёрнутых настроек: видно главное, не раскрывая.
+  function summaries() {
+    $('#sum-gamma').textContent = `${prefs.dur} мин · ${SOUNDS[prefs.sound].name}${lightActive() ? ' · свет' : ''}`;
+    $('#sum-relax').textContent = `${prefs.rdur} мин${prefs.breathe ? ' · дыхание' : ''}${prefs.binaural ? ' · бинаурально' : ''}`;
+    $('#sum-ganz').textContent = `${prefs.gdur} мин · ${GNOISE[prefs.gnoise]}`;
+  }
+
+  function render() {
+    if (S.running) doneShown = false;
+    const active = S.running && !S.paused;
+    const mode = cfgMode();
+    document.body.classList.toggle('running', active);
+    document.body.classList.toggle('on-home', mode === 'home' && !$('#view-session').hidden);
+    const onHome = mode === 'home';
+    $('#home').hidden = !onHome;
+    $('#session-wrap').hidden = onHome;
+    ['gamma', 'relax', 'ganz'].forEach((m) => { $('#panel-' + m).hidden = mode !== m; });
+    if (!onHome) { $('#mode-title').textContent = MODES[mode].title; $('#mode-lead').textContent = MODES[mode].lead; }
+    if (!backArmed) $('#back').textContent = S.running ? '← Остановить и выйти' : '← Все режимы';
+    $('#playIcon').innerHTML = active ? ICON_PAUSE : ICON_PLAY;
+    $('#play').setAttribute('aria-label', active ? 'Пауза' : S.running ? 'Продолжить' : 'Начать сеанс');
+    $('#stop').disabled = !S.running;
+    $('#dim-btn').hidden = !(active && S.mode === 'relax');
+    if (!active) flow.style.transform = '';
+    // В «Видениях» центр кольца показывает выбранный свет.
+    flow.style.background = mode === 'ganz' ? `linear-gradient(120deg, ${GPROGS[S.running ? S.gprog : prefs.gprog].seq.map((c) => 'rgb(' + GCOLORS[c] + ')').concat(GPROGS[S.running ? S.gprog : prefs.gprog].seq.length === 1 ? ['rgb(' + GCOLORS[GPROGS[S.running ? S.gprog : prefs.gprog].seq[0]] + ')'] : []).join(', ')})` : '';
+    flow.style.backgroundSize = mode === 'ganz' ? '100% 100%' : '';
+    renderStatus();
+
+    // Параметры, которые меняют стимул, закрыты во время сеанса — иначе ломается синхронизация и запись.
+    document.querySelectorAll('input[name="level"], input[name="dur"], input[name="sound"], input[name="rkind"], input[name="gprog"], input[name="gnoise"], input[name="gdur"], #binaural, #breathe').forEach((i) => { i.disabled = S.running; });
+    document.querySelectorAll('input[name="dur"]').forEach((i) => { if (+i.value > lv().maxDur) i.disabled = true; });
+    const rd = RKINDS[prefs.rkind].durs;
+    document.querySelectorAll('input[name="rdur"]').forEach((i) => {
+      const ok = rd.includes(+i.value);
+      i.disabled = S.running || !ok;
+      i.nextElementSibling.hidden = !ok;
+      i.nextElementSibling.textContent = +i.value === rd[0] ? i.value + ' мин' : i.value;
+    });
+    $('#g10').nextElementSibling.textContent = '10 мин';
+    $('#binaural').checked = prefs.binaural;
+    $('#breathe').checked = prefs.breathe;
+    const lightEl = $('#light');
+    lightEl.disabled = S.running || !lv().light;
+    lightEl.checked = lightActive();
+    $('#light-sub').textContent = lv().light ? (lv().light === 'sine' ? 'Тусклое плавное, тёплый цвет' : 'Полное мигание 50/50') : 'Есть на уровнях «Средний» и «Протокол»';
+    $('#light-warn').hidden = !lightActive();
+    $('#bright-group').hidden = !lightActive();
+    $('#sound-hint').textContent = SOUNDS[prefs.sound].hint;
+    $('#dur-hint').textContent = prefs.dur > lv().dur
+      ? `Дольше рекомендованных ${lv().dur} минут для этого уровня. Продлевайте, только если прошлые сеансы прошли спокойно.`
+      : 'В исследованиях был час в день. Начинайте с короткого.';
+    summaries();
+    if (!S.running && !noteSticky && !onHome) {
+      const n = mode === 'gamma' ? 'Станет неприятно — сразу «Стоп».'
+        : mode === 'relax' ? RKINDS[prefs.rkind].note
+        : 'Нажмите ▶, и экран зальёт цветом. Касание — пауза.';
+      setNote(n, '', true);
+    }
+    shownSec = -1;
+    drawTime();
+  }
+
+  let noteSticky = false;
+  function setNote(text, tone, soft) {
+    const n = $('#note');
+    n.textContent = text;
+    n.className = 'note' + (tone ? ' ' + tone : '');
+    noteSticky = !soft;
+  }
+
+  const fill = (el) => el.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min) * 100) + '%');
+  const savePrefs = () => store.set('g40.prefs4', Object.assign({}, prefs, { binaural: false }));
+  const reset = () => { doneShown = false; noteSticky = false; };
+
+  function setLevel(n) {
+    prefs.level = n;
+    prefs.dur = LEVELS[n].dur;
+    prefs.sound = LEVELS[n].sound;
+    $('#lv' + n).checked = true;
+    $('#d' + prefs.dur).checked = true;
+    $('#snd-' + prefs.sound).checked = true;
+    savePrefs();
+    render();
+  }
+  function setLight(on) { prefs.light = on; savePrefs(); render(); }
+  function openMode(m) { view = m; reset(); $('#feel').hidden = true; $('#vision').hidden = true; render(); window.scrollTo({ top: 0 }); }
+
+  document.querySelectorAll('.mode-card').forEach((b) => b.addEventListener('click', () => openMode(b.dataset.mode)));
+  let backArmed = false, backTimer = 0;
+  $('#back').addEventListener('click', () => {
+    if (!S.running) return openMode('home');
+    // Во время сеанса — второе нажатие подтверждает выход, чтобы не сбросить сеанс случайно.
+    if (!backArmed) {
+      backArmed = true; $('#back').classList.add('armed'); $('#back').textContent = 'Нажмите ещё раз — сеанс остановится';
+      backTimer = setTimeout(() => { backArmed = false; $('#back').classList.remove('armed'); render(); }, 3500);
+      return;
+    }
+    clearTimeout(backTimer); backArmed = false; $('#back').classList.remove('armed');
+    finish(false);
+    openMode('home');
+  });
+  const onPick = (name, fn) => document.querySelectorAll(`input[name="${name}"]`).forEach((r) => r.addEventListener('change', () => { fn(r.value); savePrefs(); reset(); render(); }));
+  document.querySelectorAll('input[name="level"]').forEach((r) => r.addEventListener('change', () => { reset(); setLevel(+r.value); }));
+  onPick('dur', (v) => { prefs.dur = +v; });
+  onPick('sound', (v) => { prefs.sound = v; });
+  onPick('rkind', (v) => { prefs.rkind = v; prefs.rdur = RKINDS[v].dur; $('#r' + prefs.rdur).checked = true; });
+  onPick('rdur', (v) => { prefs.rdur = +v; });
+  onPick('gprog', (v) => { prefs.gprog = v; });
+  onPick('gnoise', (v) => { prefs.gnoise = v; });
+  onPick('gdur', (v) => { prefs.gdur = +v; });
+  $('#binaural').addEventListener('change', (e) => { prefs.binaural = e.target.checked; summaries(); });
+  $('#breathe').addEventListener('change', (e) => { prefs.breathe = e.target.checked; savePrefs(); render(); });
+  $('#light').addEventListener('change', (e) => {
+    if (e.target.checked) requireAck(() => setLight(true), () => setLight(false));
+    else setLight(false);
+  });
+
+  const vol = $('#vol'), rvol = $('#rvol'), gvol = $('#gvol'), bright = $('#bright'), gbright = $('#gbright');
+  function onVol(el, key, mode) {
+    prefs[key] = +el.value; fill(el); $('#' + el.id + '-val').textContent = el.value + '%'; savePrefs();
+    if (live.length && S.mode === mode) {
+      const now = ctx.currentTime, e = elapsed() + 0.15;
+      gain.gain.cancelScheduledValues(0);
+      gain.gain.setValueAtTime(gain.gain.value, now);
+      gain.gain.linearRampToValueAtTime(volGain(e), now + 0.15);
+      scheduleVol(now + 0.15, e);
+    }
+  }
+  vol.addEventListener('input', () => onVol(vol, 'vol', 'gamma'));
+  rvol.addEventListener('input', () => onVol(rvol, 'rvol', 'relax'));
+  gvol.addEventListener('input', () => onVol(gvol, 'gvol', 'ganz'));
+  bright.addEventListener('input', () => { prefs.bright = +bright.value; fill(bright); $('#bright-val').textContent = bright.value + '%'; lastLevel = -1; savePrefs(); });
+  gbright.addEventListener('input', () => { prefs.gbright = +gbright.value; fill(gbright); $('#gbright-val').textContent = gbright.value + '%'; savePrefs(); summaries(); });
+
+  $('#play').addEventListener('click', toggle);
+  $('#stop').addEventListener('click', () => finish(false));
+  $('#flicker-stop').addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); swallowClick(); finish(false); });
+  document.addEventListener('keydown', (e) => {
+    if (dlg.open) return;
+    // Во время мерцания любая клавиша останавливает сеанс, кроме Escape: он только выходит из полного экрана.
+    if (!flick.hidden) { if (e.key !== 'Escape') { e.preventDefault(); finish(false); } return; }
+    // В «Видениях» мерцания нет, поэтому Escape и любая клавиша просто ставят паузу.
+    if (!ganz.hidden) { e.preventDefault(); pause('Пауза. Продолжить можно с того же места.'); return; }
+    if (!dim.hidden) { e.preventDefault(); undim(); return; }
+    if (e.target.closest && e.target.closest('input, button, a, textarea, summary')) return;
+    if (e.code === 'Space' && !e.repeat && cfgMode() !== 'home' && !$('#view-session').hidden) { e.preventDefault(); toggle(); }
+  });
+
+  $('#feel').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-feel]');
+    if (!b || !S.lastId) return;
+    const s = updateSession(S.lastId, { feel: b.dataset.feel });
+    $('#feel').hidden = true;
+    renderStats();
+    if (b.dataset.feel === 'bad' && s && s.mode === 'gamma' && s.level > 1) {
+      setLevel(s.level - 1);
+      setNote(`Переключил на уровень «${['', 'Мягкий', 'Средний'][s.level - 1]}». Сегодня лучше не продолжать.`, 'warn');
+    } else if (b.dataset.feel === 'bad') {
+      setNote('Сегодня лучше не продолжать. Если плохо не проходит, обратитесь к врачу.', 'warn');
+    } else if (b.dataset.feel === 'meh') {
+      setNote('В следующий раз попробуйте короче или тише.', 'warn');
+    } else setNote('Записано.', 'good');
+  });
+  $('#vision-save').addEventListener('click', () => {
+    const t = $('#vision-text').value.trim();
+    if (t && S.lastId) updateSession(S.lastId, { vision: t.slice(0, 1000) });
+    $('#vision').hidden = true;
+    setNote(t ? 'Записано в историю.' : 'Без записи.', t ? 'good' : '');
+    renderStats();
+  });
+
+  // ---------- вкладки ----------
+  const tabs = ['session', 'history', 'about'];
+  function showTab(name) {
+    tabs.forEach((t) => { $('#tab-' + t).setAttribute('aria-selected', t === name); $('#view-' + t).hidden = t !== name; });
+    if (name === 'history') renderStats();
+    document.body.classList.toggle('on-home', name === 'session' && cfgMode() === 'home');
+  }
+  function gotoAbout(id) {
+    showTab('about');
+    const sec = document.getElementById(id);
+    const first = sec && sec.querySelector('details');
+    if (first) first.open = true;
+    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  tabs.forEach((t) => $('#tab-' + t).addEventListener('click', () => showTab(t)));
+  $('#mode-more').addEventListener('click', () => gotoAbout('about-' + cfgMode()));
+  document.querySelectorAll('[data-goto]').forEach((b) => b.addEventListener('click', () => gotoAbout(b.dataset.goto)));
+  if (tabs.includes(location.hash.slice(1))) showTab(location.hash.slice(1));
+
+  // ---------- предупреждение ----------
+  const dlg = $('#warn'), ok = $('#warn-ok'), yes = $('#warn-yes');
+  let onYes = null, onNo = null;
+  function requireAck(yesFn, noFn) {
+    if (store.get('g40.ack', false)) return yesFn();
+    onYes = yesFn; onNo = noFn;
+    ok.checked = false; yes.disabled = true;
+    dlg.showModal();
+  }
+  function closeDlg(fn) { onYes = onNo = null; dlg.close(); if (fn) fn(); }
+  ok.addEventListener('change', () => { yes.disabled = !ok.checked; });
+  yes.addEventListener('click', () => { store.set('g40.ack', true); closeDlg(onYes); });
+  $('#warn-no').addEventListener('click', () => closeDlg(onNo));
+  // Escape в диалоге = отмена: ничего не запускаем, переключатель света возвращаем как был.
+  dlg.addEventListener('cancel', (e) => { e.preventDefault(); closeDlg(); render(); });
+
+  // ---------- экран не гаснет ----------
+  let lock = null, lockPending = false;
+  const sessionActive = () => S.running && !S.paused;
+  async function wake() {
+    if (!navigator.wakeLock || lock || lockPending) return;
+    lockPending = true;
+    try {
+      const l = await navigator.wakeLock.request('screen');
+      // Пока ждали ответа, сеанс могли остановить — тогда сразу отпускаем.
+      if (!sessionActive()) l.release(); else { lock = l; l.addEventListener('release', () => { if (lock === l) lock = null; }); }
+    } catch {}
+    lockPending = false;
+  }
+  function unwake() { try { lock && lock.release(); } catch {} lock = null; }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && sessionActive()) wake(); });
+
+  // ---------- история ----------
+  const fmtDur = (sec) => sec < 60 ? `${sec} с` : `${Math.round(sec / 60)} мин`;
+  const dayKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const sessions = () => store.get('g40.sessions', []);
+  function logSession(s) {
+    s.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const all = sessions(); all.push(s); store.set('g40.sessions', all.slice(-500));
+    return s.id;
+  }
+  function updateSession(id, patch) {
+    const all = sessions(), s = all.find((x) => x.id === id);
+    if (s) { Object.assign(s, patch); store.set('g40.sessions', all); }
+    return s;
+  }
+  const FEEL = { ok: 'нормально', meh: 'не очень', bad: 'плохо' };
+  const modeOf = (s) => s.mode === 'relax' || s.mode === 'ganz' ? s.mode : 'gamma';
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // Сеанс, оборванный закрытием вкладки, записывается как прерванный при следующем запуске.
+  const dangling = store.get('g40.current', null);
+  // Свежая отметка — сеанс ещё идёт в другой вкладке, не трогаем. Пауза тоже отметка, поэтому порог щедрый.
+  if (dangling && !(dangling.beat && Date.now() - dangling.beat < 15000 && !dangling.pausedAt)) {
+    if (dangling.sec >= 5 && !sessions().some((x) => x.start === dangling.start)) { delete dangling.beat; logSession(Object.assign(dangling, { done: false })); }
+    store.del('g40.current');
+  }
+
+  function describe(s) {
+    const m = modeOf(s);
+    if (m === 'relax') return `отдых · ${RKINDS[s.rkind] ? RKINDS[s.rkind].name : 'биения'}`;
+    if (m === 'ganz') return `видения · ${GPROGS[s.gprog] ? GPROGS[s.gprog].name : 'цвет'} · ${GNOISE[s.gnoise] || 'шум'}`;
+    const lvName = ['', 'мягкий', 'средний', 'протокол'][s.level] || 'очистка';
+    const snd = SOUNDS[s.sound] ? SOUNDS[s.sound].name : 'звук';
+    return `очистка · ${lvName} · ${snd}${s.light ? ' + свет' : ''}`;
+  }
+
+  const BAR = { gamma: 'var(--g2)', relax: 'var(--g1)', ganz: 'var(--g3)' };
+  function renderStats() {
+    const all = sessions();
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const byDay = {}, doneDays = new Set();
+    for (const s of all) {
+      const k = dayKey(new Date(s.start));
+      byDay[k] = byDay[k] || { gamma: 0, relax: 0, ganz: 0 };
+      byDay[k][modeOf(s)] += s.sec;
+      if (s.done) doneDays.add(k);
+    }
+    let streak = 0;
+    const d = new Date(today);
+    if (!doneDays.has(dayKey(d))) d.setDate(d.getDate() - 1);
+    while (doneDays.has(dayKey(d))) { streak++; d.setDate(d.getDate() - 1); }
+
+    let week = 0, maxSec = 30 * 60;
+    const span = [];
+    const sum = (v) => v.gamma + v.relax + v.ganz;
+    for (let i = 13; i >= 0; i--) { const x = new Date(today); x.setDate(x.getDate() - i); const v = byDay[dayKey(x)] || { gamma: 0, relax: 0, ganz: 0 }; span.push([x, v, i]); maxSec = Math.max(maxSec, sum(v)); }
+    const days = $('#days');
+    days.textContent = '';
+    for (const [x, v, i] of span) {
+      if (i < 7) week += sum(v);
+      const el = document.createElement('div');
+      el.className = 'day' + (i === 0 ? ' today' : '');
+      el.title = `${x.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}: ${Math.round(sum(v) / 60)} мин`;
+      el.innerHTML = `<div class="bar">${Object.keys(BAR).map((m) => `<i style="height:${v[m] / maxSec * 100}%;background:${BAR[m]}"></i>`).join('')}</div><small>${x.getDate()}</small>`;
+      days.appendChild(el);
+    }
+    const plural = (n, a, b, c) => { const m = n % 100, k = n % 10; return m > 10 && m < 20 ? c : k === 1 ? a : k > 1 && k < 5 ? b : c; };
+    const wm = Math.round(week / 60);
+    $('#n-streak').textContent = streak;
+    $('#l-streak').textContent = plural(streak, 'день', 'дня', 'дней') + ' подряд';
+    $('#n-week').textContent = wm;
+    $('#l-week').textContent = plural(wm, 'минута', 'минуты', 'минут') + ' за 7 дней';
+    $('#n-total').textContent = all.length;
+    $('#l-total').textContent = plural(all.length, 'сеанс', 'сеанса', 'сеансов') + ' всего';
+
+    const list = $('#list');
+    list.textContent = '';
+    for (const s of all.slice(-12).reverse()) {
+      const t = new Date(s.start);
+      const li = document.createElement('li');
+      const feel = s.feel ? ` · <span class="${s.feel === 'bad' ? 'feel-bad' : ''}">${FEEL[s.feel]}</span>` : '';
+      li.innerHTML = `<div>${t.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}, ${t.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}<small>${describe(s)}${feel}</small></div><span class="dur">${fmtDur(s.sec)}</span><span class="chip ${s.done ? 'done' : ''}">${s.done ? 'завершён' : 'прерван'}</span>${s.vision ? `<div class="vision">«${esc(s.vision)}»</div>` : ''}`;
+      list.appendChild(li);
+    }
+    $('#empty').hidden = all.length > 0;
+    list.hidden = all.length === 0;
+    $('#clear').hidden = all.length === 0;
+  }
+
+  const clearBtn = $('#clear');
+  let armTimer = 0;
+  clearBtn.addEventListener('click', () => {
+    if (!clearBtn.classList.contains('armed')) {
+      clearBtn.classList.add('armed'); clearBtn.textContent = 'Нажмите ещё раз, чтобы удалить всё';
+      armTimer = setTimeout(() => { clearBtn.classList.remove('armed'); clearBtn.textContent = 'Очистить историю'; }, 3500);
+      return;
+    }
+    clearTimeout(armTimer);
+    store.set('g40.sessions', []);
+    clearBtn.classList.remove('armed'); clearBtn.textContent = 'Очистить историю';
+    renderStats();
+  });
+
+  window.addEventListener('pagehide', () => { if (S.running) saveCurrent(); });
+
+  // ---------- старт ----------
+  function wavePath(cycles, amp, w, h) {
+    let p = '';
+    for (let x = 0; x <= w; x += w / 200) { const y = h / 2 + amp * Math.sin(2 * Math.PI * cycles * x / w); p += (p ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); }
+    return p;
+  }
+  $('#waveGamma').setAttribute('d', wavePath(20, 22, 400, 96));
+  $('#waveRelax').setAttribute('d', wavePath(1.5, 28, 400, 96));
+  $('#lw-alpha').setAttribute('d', wavePath(5, 5, 30, 16));
+  $('#lw-theta').setAttribute('d', wavePath(3, 5.5, 30, 16));
+  $('#lw-delta').setAttribute('d', wavePath(1, 6, 30, 16));
+
+  const ticks = $('#ticks');
+  for (let i = 0; i < 60; i++) {
+    const a = i / 60 * 2 * Math.PI, r1 = i % 5 ? 118 : 116, r2 = 121;
+    const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    l.setAttribute('x1', 120 + r1 * Math.cos(a)); l.setAttribute('y1', 120 + r1 * Math.sin(a));
+    l.setAttribute('x2', 120 + r2 * Math.cos(a)); l.setAttribute('y2', 120 + r2 * Math.sin(a));
+    ticks.appendChild(l);
+  }
+  $('#lv' + prefs.level).checked = true;
+  $('#d' + prefs.dur).checked = true;
+  $('#snd-' + prefs.sound).checked = true;
+  $('#rk-' + prefs.rkind).checked = true;
+  $('#r' + prefs.rdur).checked = true;
+  $('#gp-' + prefs.gprog).checked = true;
+  $('#gn-' + prefs.gnoise).checked = true;
+  $('#g' + prefs.gdur).checked = true;
+  for (const [el, key] of [[vol, 'vol'], [rvol, 'rvol'], [gvol, 'gvol'], [bright, 'bright'], [gbright, 'gbright']]) {
+    el.value = prefs[key]; $('#' + el.id + '-val').textContent = prefs[key] + '%'; fill(el);
+  }
+  render();
+  renderStats();
+  requestAnimationFrame(frame);
+
+  // Хук для автотестов (не влияет на работу).
+  window.__g40 = { volGain, gainNow: () => gain.gain.value, S, prefs, LEVELS, SOUNDS, RKINDS, GPROGS, elapsed, lightValue, breathShape, guideAt, fadeAt, ganzColor, finish, pause, play, openMode, bufferFor, get ctx() { return ctx; }, get live() { return live; } };
+})();
+</script>
