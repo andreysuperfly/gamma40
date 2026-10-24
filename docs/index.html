@@ -22,6 +22,7 @@
   --g1: #7fb8c9;   /* морская вода */
   --g2: #8b93e6;   /* сумеречный синий */
   --g3: #e2a59a;   /* тёплый коралл */
+  --g4: #d2b468;   /* приглушённое золото */
   --good: #2b8a63;
   --warn: #b66a12;
   --bad: #c2414f;
@@ -31,14 +32,14 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0f1317; --surface: #171d23; --sunken: #0b0f12; --ink: #e9eef2; --muted: #9aa6b1; --faint: #6c7883;
-    --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f;
+    --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f; --g4: #9c8441;
     --good: #5cc497; --warn: #e5a556; --bad: #f07a86;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #0f1317; --surface: #171d23; --sunken: #0b0f12; --ink: #e9eef2; --muted: #9aa6b1; --faint: #6c7883;
-  --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f;
+  --line: #26303a; --accent: #7fa2f0; --g1: #3f8396; --g2: #5b62b8; --g3: #b0705f; --g4: #9c8441;
   --good: #5cc497; --warn: #e5a556; --bad: #f07a86;
   color-scheme: dark;
 }
@@ -72,7 +73,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--font); font-
 .on-home .brand { display: none; }
 .on-home .top { justify-content: center; }
 .modes { display: grid; gap: 12px; }
-@media (min-width: 820px) { .modes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 680px) { .modes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .mode-card {
   display: grid; grid-template-rows: auto 1fr auto; text-align: left; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer;
   border-radius: var(--radius); background: var(--surface); overflow: hidden;
@@ -216,6 +217,11 @@ details.settings > summary .sum { flex: 1; min-width: 0; color: var(--muted); fo
 details.settings > summary::after { content: ""; flex: none; width: 8px; height: 8px; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); rotate: 45deg; translate: 0 -2px; transition: rotate .2s ease; }
 details.settings[open] > summary::after { rotate: 225deg; translate: 0 2px; }
 .settings-body { display: grid; gap: 20px; padding: 4px 18px 20px; }
+.ears { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; padding: 12px 14px; border-radius: 14px; background: var(--surface); }
+.ears span { font-size: .9rem; }
+.ears small { display: block; color: var(--faint); font-size: .8rem; }
+.ears .row-btns { display: flex; gap: 6px; }
+.ears .btn { padding: 8px 14px; }
 .screen { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 14px; background: var(--bg); }
 .dot { flex: none; width: 8px; height: 8px; margin-top: .5em; border-radius: 50%; background: var(--faint); }
 .dot.good { background: var(--good); } .dot.warn { background: var(--warn); } .dot.bad { background: var(--bad); }
@@ -253,7 +259,7 @@ details.settings[open] > summary::after { rotate: 225deg; translate: 0 2px; }
 /* ---------- 4. о методе ---------- */
 .about { display: grid; gap: 14px; }
 .sum-cards { display: grid; gap: 10px; }
-@media (min-width: 820px) { .sum-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 680px) { .sum-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .sum-card { display: grid; gap: 8px; align-content: start; padding: 18px; border-radius: 18px; background: var(--surface); }
 .sum-card h3 { margin: 0; font-size: 1.05rem; font-weight: 600; }
 .sum-card p { margin: 0; font-size: .9rem; color: var(--muted); }
@@ -361,6 +367,20 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
             <p>Ровный цветной свет и шум волн. Через 10–20 минут мозг сам начинает рисовать картины.</p>
           </div>
           <div class="mc-foot"><span class="ev">видения у 9 из 10</span><span class="go">→</span></div>
+        </button>
+        <button class="mode-card" data-mode="focus">
+          <svg class="art" viewBox="0 0 400 96" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="mgD" x1="0" x2="1"><stop offset="0" style="stop-color: var(--g4)"></stop><stop offset="1" style="stop-color: var(--g2)"></stop></linearGradient></defs>
+            <rect width="400" height="96" fill="url(#mgD)" opacity=".18"></rect>
+            <path id="waveFocusL" fill="none" stroke="var(--g4)" stroke-width="2.5" stroke-linecap="round"></path>
+            <path id="waveFocusR" fill="none" stroke="var(--g2)" stroke-width="2.5" stroke-linecap="round" opacity=".8"></path>
+          </svg>
+          <div class="mc-body">
+            <span class="mc-kicker">Бинауральные биения</span>
+            <h2>Фокус</h2>
+            <p>Два тона, по одному в каждое ухо. 10 минут перед делом: экзамен, работа, визит к врачу.</p>
+          </div>
+          <div class="mc-foot"><span class="ev">метаанализ: средний эффект</span><span class="go">→</span></div>
         </button>
       </div>
     </section>
@@ -588,6 +608,52 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
             </div>
           </details>
         </div>
+
+        <!-- ===== Фокус ===== -->
+        <div class="panel" id="panel-focus" hidden>
+          <div class="group">
+            <div class="group-h"><h3>Задача</h3></div>
+            <div class="levels" role="radiogroup" aria-label="Задача">
+              <div class="level"><input type="radio" name="fkind" id="fk-memory" value="memory"><label for="fk-memory">
+                <span class="lv-top"><svg class="lv-wave" viewBox="0 0 30 16" aria-hidden="true"><path id="lw-memory"></path></svg><b>Память</b></span>
+                <span class="sub">Бета 15 Гц · перед учёбой</span>
+              </label></div>
+              <div class="level"><input type="radio" name="fkind" id="fk-attention" value="attention"><label for="fk-attention">
+                <span class="lv-top"><svg class="lv-wave" viewBox="0 0 30 16" aria-hidden="true"><path id="lw-attention"></path></svg><b>Внимание</b></span>
+                <span class="sub">Гамма 40 Гц · перед работой</span>
+              </label></div>
+              <div class="level"><input type="radio" name="fkind" id="fk-calm" value="calm"><label for="fk-calm">
+                <span class="lv-top"><svg class="lv-wave" viewBox="0 0 30 16" aria-hidden="true"><path id="lw-calm"></path></svg><b>Спокойствие</b></span>
+                <span class="sub">Альфа 10 Гц · перед волнением</span>
+              </label></div>
+            </div>
+          </div>
+
+          <div class="ears">
+            <span>Нужны наушники<small>Проверьте, что звук в нужном ухе.</small></span>
+            <div class="row-btns"><button class="btn" data-ear="-1">Левое</button><button class="btn" data-ear="1">Правое</button></div>
+          </div>
+
+          <div class="group">
+            <div class="group-h"><label for="fvol">Громкость</label><span class="val" id="fvol-val"></span></div>
+            <input type="range" id="fvol" min="0" max="100" step="1" value="18">
+          </div>
+
+          <details class="settings" id="set-focus">
+            <summary><b>Настройки</b><span class="sum" id="sum-focus"></span></summary>
+            <div class="settings-body">
+              <div class="group">
+                <div class="group-h"><h3>Длительность</h3></div>
+                <div class="chips" role="radiogroup" aria-label="Длительность">
+                  <input type="radio" name="fdur" id="f10" value="10"><label for="f10">10 мин</label>
+                  <input type="radio" name="fdur" id="f15" value="15"><label for="f15">15</label>
+                  <input type="radio" name="fdur" id="f20" value="20"><label for="f20">20</label>
+                </div>
+                <p class="hint">Лучше всего работало, когда биения слушали до задачи, а не во время. Дольше — обычно сильнее.</p>
+              </div>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   </div>
@@ -602,7 +668,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     <div class="days-wrap">
       <p class="label-sm">Минуты по дням</p>
       <div class="days" id="days"></div>
-      <div class="legend"><span style="--c: var(--g2)">Очистка</span><span style="--c: var(--g1)">Отдых</span><span style="--c: var(--g3)">Видения</span></div>
+      <div class="legend"><span style="--c: var(--g2)">Очистка</span><span style="--c: var(--g1)">Отдых</span><span style="--c: var(--g3)">Видения</span><span style="--c: var(--g4)">Фокус</span></div>
     </div>
     <ul class="list" id="list"></ul>
     <p class="empty" id="empty">Пока пусто. Здесь будет каждый сеанс: режим, длительность, самочувствие и что вы видели.</p>
@@ -629,6 +695,12 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
         <p>Однородный свет и шум лишают мозг деталей, и он начинает дорисовывать сам.</p>
         <dl><dt>Доказано</dt><dd>видения у 89–96% участников</dd><dt>Для чего</dt><dd>необычный опыт, не лечение</dd></dl>
         <button class="more" data-goto="about-ganz">Подробнее →</button>
+      </div>
+      <div class="sum-card">
+        <h3>Фокус</h3>
+        <p>Тоны чуть разной частоты в левом и правом ухе. Мозг слышит между ними третий, пульсирующий ритм.</p>
+        <dl><dt>Доказано</dt><dd>метаанализ 22 исследований: средний эффект; исследования малые</dd><dt>Для чего</dt><dd>память, внимание, тревога перед событием</dd></dl>
+        <button class="more" data-goto="about-focus">Подробнее →</button>
       </div>
     </div>
 
@@ -702,6 +774,23 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
         </div></details>
       </section>
 
+      <section id="about-focus">
+        <p class="label-sm">Фокус</p>
+        <h2>Бинауральные биения</h2>
+        <p class="lead">В левое ухо звучит один тон, в правое — чуть другой, например 250 и 265 Гц. Ни в одном ухе пульсации нет, её собирает сам мозг: слышится мягкое биение 15 раз в секунду. Работает только в наушниках.</p>
+        <p>В метаанализе 2019 года (22 исследования) бинауральные биения немного улучшали память и внимание и снижали тревогу и боль, эффект средний. Лучше всего — если слушать до задачи, а не во время, и подольше. Исследования в основном небольшие, а в некоторых эффекта не было.</p>
+        <details><summary>Почему три задачи и такие частоты</summary><div>
+          <ul>
+            <li><b>Память, бета 15 Гц.</b> В нескольких небольших исследованиях бета-биения 15 Гц улучшали рабочую память и запоминание слов. Тета-биения, наоборот, мешали запоминать.</li>
+            <li><b>Внимание, гамма 40 Гц.</b> Данные слабее: в одном исследовании на 24 людях реакция в тесте на внимание стала быстрее, но общая точность не выросла.</li>
+            <li><b>Спокойствие, альфа 10 Гц.</b> Как в исследованиях перед операциями и у стоматолога: 210 Гц в одно ухо, 220 Гц в другое, 10 минут. Тревога падала сильнее, чем от той же музыки без биений. В одном исследовании музыка 432 Гц помогла так же.</li>
+          </ul>
+        </div></details>
+        <details><summary>Чем отличается от «Отдыха»</summary><div>
+          <p>В «Отдыхе» биения обычные: оба тона звучат в обоих ушах, и пульсация слышна физически. Мозг на неё отвечает сильнее, поэтому там бинауральный вариант выключен. Здесь всё наоборот: исследования памяти, внимания и тревоги делали именно с бинауральными биениями, поэтому и режим такой же.</p>
+        </div></details>
+      </section>
+
       <section id="about-safety">
         <p class="label-sm">Для всех режимов</p>
         <h2>Безопасность</h2>
@@ -738,6 +827,10 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
             <li>Fultz N.E. et al. Coupled electrophysiological, hemodynamic, and CSF oscillations in human sleep. <i>Science</i> (2019). <a href="https://doi.org/10.1126/science.aax5440" target="_blank" rel="noopener">doi:10.1126/science.aax5440</a></li>
             <li>Levitt J., Lewis L. et al. Closed-loop auditory stimulation enhances CSF flow. <i>Sci. Transl. Med.</i> (2026). <a href="https://news.mit.edu/2026/pink-noise-burst-may-mean-more-restorative-sleep-0909" target="_blank" rel="noopener">MIT News</a></li>
             <li>Pistolas E., Smets L., Wagemans J. Wave after wave: multisensory hallucinations under multimodal Ganzfeld stimulation. <i>i-Perception</i> 16(5) (2025). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12457770/" target="_blank" rel="noopener">PMC12457770</a></li>
+            <li>Garcia-Argibay M., Santed M.A., Reales J.M. Efficacy of binaural auditory beats in cognition, anxiety, and pain perception: a meta-analysis. <i>Psychological Research</i> 83 (2019). <a href="https://pubmed.ncbi.nlm.nih.gov/30073406/" target="_blank" rel="noopener">PubMed 30073406</a></li>
+            <li>Padmanabhan R., Hildreth A.J., Laws D. Binaural beat audio and pre-operative anxiety. <i>Anaesthesia</i> (2005). <a href="https://pubmed.ncbi.nlm.nih.gov/16115248/" target="_blank" rel="noopener">PubMed 16115248</a></li>
+            <li>Binaural beats or 432 Hz music for preoperative dental anxiety (2021). <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7806348/" target="_blank" rel="noopener">PMC7806348</a></li>
+            <li>Alpha, beta and gamma binaural beats and working memory: randomized placebo-controlled trial (2022). <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9153928/" target="_blank" rel="noopener">PMC9153928</a></li>
             <li>Nigg J.T. et al. White or pink noise for ADHD: meta-analysis. <i>JAACAP</i> (2024). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11283987/" target="_blank" rel="noopener">PMC11283987</a></li>
             <li>Notched music for tinnitus, meta-analyses 2024–2025. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10727622/" target="_blank" rel="noopener">PMC10727622</a></li>
           </ol>
@@ -782,6 +875,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   const MODES = {
     gamma: { title: 'Очистка', lead: 'Звук и свет 40 раз в секунду, как в протоколе MIT. Если станет нехорошо — переключитесь на уровень слабее.' },
     relax: { title: 'Отдых', lead: 'Дышите вслед за кругом. Биения в ритме мозговых волн звучат фоном.' },
+    focus: { title: 'Фокус', lead: 'Наденьте наушники, сядьте удобно, закройте глаза. Послушайте 10 минут и сразу переходите к делу.' },
     ganz:  { title: 'Видения', lead: 'Затемните комнату и лягте. Держите телефон в 15–20 см над лицом, глаза полуприкрыты. Смотрите в цвет и ничего не ищите — картины придут сами.' },
   };
 
@@ -810,6 +904,12 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     blue:  { name: 'синий',        seq: ['blue'] },
   };
   const GNOISE = { brown: 'шум волн', white: 'белый шум', none: 'тишина' };
+  // Фокус: левое ухо — carrier, правое — carrier + beat. Целые частоты, буфер 1 с замыкается без стыка.
+  const FKINDS = {
+    memory:    { name: 'память · бета 15 Гц',        beat: 15, carrier: 250 },
+    attention: { name: 'внимание · гамма 40 Гц',     beat: 40, carrier: 400 },
+    calm:      { name: 'спокойствие · альфа 10 Гц',  beat: 10, carrier: 210 },
+  };
   const GCOLOR_NAMES = { red: 'красный', orange: 'оранжевый', purple: 'фиолетовый', blue: 'синий' };
 
   const store = {
@@ -822,6 +922,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     level: 3, dur: 30, light: true, vol: 20, bright: 60, sound: 'tone',
     rkind: 'alpha', rdur: 10, rvol: 18, breathe: true,
     gprog: 'cycle', gnoise: 'brown', gdur: 15, gvol: 18, gbright: 45,
+    fkind: 'memory', fdur: 10, fvol: 18,
   }, store.get('g40.prefs4', {}));
   if (!prefs.v5) { prefs.v5 = true; prefs.level = 3; prefs.dur = 30; prefs.sound = 'burst'; prefs.light = true; }
   if (!LEVELS[prefs.level]) prefs.level = 1;
@@ -829,6 +930,8 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   if (!RKINDS[prefs.rkind]) prefs.rkind = 'alpha';
   if (!GPROGS[prefs.gprog]) prefs.gprog = 'cycle';
   if (!GNOISE[prefs.gnoise]) prefs.gnoise = 'brown';
+  if (!FKINDS[prefs.fkind]) prefs.fkind = 'memory';
+  if (![10, 15, 20].includes(prefs.fdur)) prefs.fdur = 10;
   if (![10, 15, 25].includes(prefs.gdur)) prefs.gdur = 15;
   prefs.binaural = false;  // бинаурально — только осознанно, на один раз; при открытии всегда выключено
   if (prefs.dur > LEVELS[prefs.level].maxDur || !document.getElementById('d' + prefs.dur)) prefs.dur = LEVELS[prefs.level].dur;
@@ -836,7 +939,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
 
   // view: какой экран открыт; S: снимок параметров на время сеанса (менять настройки во время сеанса нельзя).
   let view = 'home';
-  const S = { running: false, paused: false, base: 0, startedISO: null, t0: 0, lightT0: 0, total: 0, mode: 'gamma', level: 1, light: false, sound: 'tone', rkind: 'alpha', binaural: false, breathe: true, gprog: 'cycle', gnoise: 'brown', lastId: null };
+  const S = { running: false, paused: false, base: 0, startedISO: null, t0: 0, lightT0: 0, total: 0, mode: 'gamma', level: 1, light: false, sound: 'tone', rkind: 'alpha', binaural: false, breathe: true, gprog: 'cycle', gnoise: 'brown', fkind: 'memory', lastId: null };
   let ctx = null, gain = null, live = [];
   const buffers = {};
 
@@ -865,7 +968,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     const sr = ctx.sampleRate;
     const secs = kind === 'breathEnv' ? CYCLE : kind.startsWith('noise') ? 8 : 1;
     const len = sr * secs;
-    const stereo = kind.startsWith('beatB:');
+    const stereo = kind.startsWith('beatB:') || kind.startsWith('bin:');
     const buf = ctx.createBuffer(stereo ? 2 : 1, len, sr);
     const d = buf.getChannelData(0);
     if (kind === 'tone') {
@@ -881,6 +984,14 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
       noise(d, kind.split(':')[1]);
       const k = kind === 'noise:white' ? 0.35 : 0.8;
       for (let j = 0; j < len; j++) d[j] *= k;
+    } else if (kind.startsWith('bin:')) {
+      // Бинаурально: чистый тон в каждое ухо и тихая октава ниже в оба — для тепла, без собственной пульсации.
+      const f = FKINDS[kind.split(':')[1]], fl = f.carrier, fr = f.carrier + f.beat, d2 = buf.getChannelData(1);
+      for (let j = 0; j < len; j++) {
+        const t = j / sr, pad = 0.12 * Math.sin(2 * Math.PI * (fl / 2) * t);
+        d[j] = 0.5 * Math.sin(2 * Math.PI * fl * t) + pad;
+        d2[j] = 0.5 * Math.sin(2 * Math.PI * fr * t) + pad;
+      }
     } else if (kind.startsWith('beat')) {
       // Биение: два близких тона (fc и fc+beat) плюс тихий фон — октава ниже и квинта выше.
       // Монаурально оба тона в одном канале; бинаурально — по одному в каждое ухо.
@@ -943,7 +1054,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   const BOOST = 6, BOOST_T = 60;
   const boosted = () => S.mode === 'gamma' && S.level === 3;
   const volGain = (e) => {
-    let v = S.mode === 'relax' ? prefs.rvol : S.mode === 'ganz' ? prefs.gvol : prefs.vol;
+    let v = S.mode === 'relax' ? prefs.rvol : S.mode === 'ganz' ? prefs.gvol : S.mode === 'focus' ? prefs.fvol : prefs.vol;
     if (boosted()) v = Math.min(100, v + BOOST * Math.min(1, (e || 0) / BOOST_T));
     return Math.pow(v / 100, 2) * (S.mode === 'gamma' ? 0.85 : 0.9);
   };
@@ -989,6 +1100,10 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     if (S.mode === 'gamma') {
       // Каждый буфер начинается с фазы 0 и содержит целое число периодов, поэтому смещение не нужно.
       loopSrc(S.sound, gain, t0);
+      return;
+    }
+    if (S.mode === 'focus') {
+      loopSrc('bin:' + S.fkind, gain, t0, b % 1);
       return;
     }
     if (S.mode === 'ganz') {
@@ -1054,6 +1169,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     if (S.mode === 'gamma') Object.assign(s, { level: S.level, light: S.light, sound: S.sound });
     if (S.mode === 'relax') Object.assign(s, { rkind: S.rkind, binaural: S.binaural });
     if (S.mode === 'ganz') Object.assign(s, { gprog: S.gprog, gnoise: S.gnoise });
+    if (S.mode === 'focus') s.fkind = S.fkind;
     if (S.paused) s.pausedAt = S.pausedAt;
     return s;
   };
@@ -1067,6 +1183,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
       if (S.mode === 'gamma') { S.total = prefs.dur * 60; S.level = prefs.level; S.light = lightActive(); S.sound = prefs.sound; }
       if (S.mode === 'relax') { S.total = prefs.rdur * 60; S.rkind = prefs.rkind; S.binaural = prefs.binaural; S.breathe = prefs.breathe; }
       if (S.mode === 'ganz')  { S.total = prefs.gdur * 60; S.gprog = prefs.gprog; S.gnoise = prefs.gnoise; }
+      if (S.mode === 'focus') { S.total = prefs.fdur * 60; S.fkind = prefs.fkind; }
       $('#feel').hidden = true; $('#vision').hidden = true;
     }
     S.paused = false;
@@ -1076,6 +1193,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     render();
     if (S.mode === 'gamma') setNote(fresh ? 'Сеанс идёт. Если станет неприятно, сразу «Стоп».' : 'Продолжаем.');
     else if (S.mode === 'relax') setNote(S.breathe ? RKINDS[S.rkind].note : 'Закройте глаза и просто слушайте.');
+    else if (S.mode === 'focus') setNote('Закройте глаза и слушайте. Думать ни о чём специально не нужно.');
     else setNote('Сеанс на паузе продолжится с того же цвета.');
     if (isSleep()) dimLater(S.breathe && S.base < GUIDE ? (GUIDE - S.base) * 1000 : 20000);
     const ramp = S.mode === 'gamma' ? (fresh ? LEVELS[S.level].soundRamp : 1) : (fresh ? 5 : 1);
@@ -1109,7 +1227,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     doneShown = done;
     render();
     renderStats();
-    if (done) setNote(isSleep() ? 'Спокойной ночи. Сеанс записан.' : 'Сеанс завершён и записан.', 'good');
+    if (done) setNote(isSleep() ? 'Спокойной ночи. Сеанс записан.' : S.mode === 'focus' ? 'Готово. Самое время браться за дело.' : 'Сеанс завершён и записан.', 'good');
     else if (snap.sec >= 5) setNote(`Остановлено на ${fmtDur(snap.sec)}. Записано как прерванный.`);
     else setNote('Сеанс меньше 5 секунд, в историю не попал.');
     $('#feel').hidden = !S.lastId || S.mode === 'ganz';
@@ -1254,7 +1372,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     requestAnimationFrame(frame);
   }
 
-  const plannedMin = (m) => m === 'relax' ? prefs.rdur : m === 'ganz' ? prefs.gdur : prefs.dur;
+  const plannedMin = (m) => m === 'relax' ? prefs.rdur : m === 'ganz' ? prefs.gdur : m === 'focus' ? prefs.fdur : prefs.dur;
   function drawTime() {
     const total = S.running ? S.total : plannedMin(cfgMode()) * 60;
     const e = S.running ? elapsed() : (doneShown ? total : 0);
@@ -1290,6 +1408,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     $('#sum-gamma').textContent = `${prefs.dur} мин · ${SOUNDS[prefs.sound].name}${lightActive() ? ' · свет' : ''}`;
     $('#sum-relax').textContent = `${prefs.rdur} мин${prefs.breathe ? ' · дыхание' : ''}${prefs.binaural ? ' · бинаурально' : ''}`;
     $('#sum-ganz').textContent = `${prefs.gdur} мин · ${GNOISE[prefs.gnoise]}`;
+    $('#sum-focus').textContent = `${prefs.fdur} мин`;
   }
 
   function render() {
@@ -1301,7 +1420,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     const onHome = mode === 'home';
     $('#home').hidden = !onHome;
     $('#session-wrap').hidden = onHome;
-    ['gamma', 'relax', 'ganz'].forEach((m) => { $('#panel-' + m).hidden = mode !== m; });
+    ['gamma', 'relax', 'ganz', 'focus'].forEach((m) => { $('#panel-' + m).hidden = mode !== m; });
     if (!onHome) { $('#mode-title').textContent = MODES[mode].title; $('#mode-lead').textContent = MODES[mode].lead; }
     if (!backArmed) $('#back').textContent = S.running ? '← Остановить и выйти' : '← Все режимы';
     $('#playIcon').innerHTML = active ? ICON_PAUSE : ICON_PLAY;
@@ -1315,7 +1434,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     renderStatus();
 
     // Параметры, которые меняют стимул, закрыты во время сеанса — иначе ломается синхронизация и запись.
-    document.querySelectorAll('input[name="level"], input[name="dur"], input[name="sound"], input[name="rkind"], input[name="gprog"], input[name="gnoise"], input[name="gdur"], #binaural, #breathe').forEach((i) => { i.disabled = S.running; });
+    document.querySelectorAll('input[name="level"], input[name="dur"], input[name="sound"], input[name="rkind"], input[name="gprog"], input[name="gnoise"], input[name="gdur"], input[name="fkind"], input[name="fdur"], #binaural, #breathe').forEach((i) => { i.disabled = S.running; });
     document.querySelectorAll('input[name="dur"]').forEach((i) => { if (+i.value > lv().maxDur) i.disabled = true; });
     const rd = RKINDS[prefs.rkind].durs;
     document.querySelectorAll('input[name="rdur"]').forEach((i) => {
@@ -1341,6 +1460,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     if (!S.running && !noteSticky && !onHome) {
       const n = mode === 'gamma' ? 'Станет неприятно — сразу «Стоп».'
         : mode === 'relax' ? RKINDS[prefs.rkind].note
+        : mode === 'focus' ? 'Без наушников не сработает: в динамике тоны смешаются.'
         : 'Нажмите ▶, и экран зальёт цветом. Касание — пауза.';
       setNote(n, '', true);
     }
@@ -1396,6 +1516,19 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   onPick('gprog', (v) => { prefs.gprog = v; });
   onPick('gnoise', (v) => { prefs.gnoise = v; });
   onPick('gdur', (v) => { prefs.gdur = +v; });
+  onPick('fkind', (v) => { prefs.fkind = v; });
+  onPick('fdur', (v) => { prefs.fdur = +v; });
+  // Проверка наушников: короткий тон только в одно ухо.
+  document.querySelectorAll('[data-ear]').forEach((btn) => btn.addEventListener('click', async () => {
+    if (S.running) return;
+    ensureCtx(); await ctx.resume();
+    const o = ctx.createOscillator(), g = ctx.createGain(), pan = ctx.createStereoPanner(), t = ctx.currentTime + 0.02, v = Math.max(0.02, Math.pow(prefs.fvol / 100, 2) * 0.9);
+    o.frequency.value = 440; pan.pan.value = +btn.dataset.ear;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + 0.05); g.gain.setValueAtTime(v, t + 0.6); g.gain.linearRampToValueAtTime(0, t + 0.7);
+    o.connect(g).connect(pan).connect(ctx.destination);
+    o.start(t); o.stop(t + 0.75);
+    o.onended = () => { pan.disconnect(); idleAudio(); };
+  }));
   $('#binaural').addEventListener('change', (e) => { prefs.binaural = e.target.checked; summaries(); });
   $('#breathe').addEventListener('change', (e) => { prefs.breathe = e.target.checked; savePrefs(); render(); });
   $('#light').addEventListener('change', (e) => {
@@ -1403,7 +1536,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     else setLight(false);
   });
 
-  const vol = $('#vol'), rvol = $('#rvol'), gvol = $('#gvol'), bright = $('#bright'), gbright = $('#gbright');
+  const vol = $('#vol'), rvol = $('#rvol'), gvol = $('#gvol'), fvol = $('#fvol'), bright = $('#bright'), gbright = $('#gbright');
   function onVol(el, key, mode) {
     prefs[key] = +el.value; fill(el); $('#' + el.id + '-val').textContent = el.value + '%'; savePrefs();
     if (live.length && S.mode === mode) {
@@ -1417,6 +1550,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   vol.addEventListener('input', () => onVol(vol, 'vol', 'gamma'));
   rvol.addEventListener('input', () => onVol(rvol, 'rvol', 'relax'));
   gvol.addEventListener('input', () => onVol(gvol, 'gvol', 'ganz'));
+  fvol.addEventListener('input', () => onVol(fvol, 'fvol', 'focus'));
   bright.addEventListener('input', () => { prefs.bright = +bright.value; fill(bright); $('#bright-val').textContent = bright.value + '%'; lastLevel = -1; savePrefs(); });
   gbright.addEventListener('input', () => { prefs.gbright = +gbright.value; fill(gbright); $('#gbright-val').textContent = gbright.value + '%'; savePrefs(); summaries(); });
 
@@ -1523,7 +1657,7 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
     return s;
   }
   const FEEL = { ok: 'нормально', meh: 'не очень', bad: 'плохо' };
-  const modeOf = (s) => s.mode === 'relax' || s.mode === 'ganz' ? s.mode : 'gamma';
+  const modeOf = (s) => ['relax', 'ganz', 'focus'].includes(s.mode) ? s.mode : 'gamma';
   const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   // Сеанс, оборванный закрытием вкладки, записывается как прерванный при следующем запуске.
@@ -1537,20 +1671,21 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   function describe(s) {
     const m = modeOf(s);
     if (m === 'relax') return `отдых · ${RKINDS[s.rkind] ? RKINDS[s.rkind].name : 'биения'}`;
+    if (m === 'focus') return `фокус · ${FKINDS[s.fkind] ? FKINDS[s.fkind].name : 'биения'}`;
     if (m === 'ganz') return `видения · ${GPROGS[s.gprog] ? GPROGS[s.gprog].name : 'цвет'} · ${GNOISE[s.gnoise] || 'шум'}`;
     const lvName = ['', 'мягкий', 'средний', 'протокол'][s.level] || 'очистка';
     const snd = SOUNDS[s.sound] ? SOUNDS[s.sound].name : 'звук';
     return `очистка · ${lvName} · ${snd}${s.light ? ' + свет' : ''}`;
   }
 
-  const BAR = { gamma: 'var(--g2)', relax: 'var(--g1)', ganz: 'var(--g3)' };
+  const BAR = { gamma: 'var(--g2)', relax: 'var(--g1)', ganz: 'var(--g3)', focus: 'var(--g4)' };
   function renderStats() {
     const all = sessions();
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const byDay = {}, doneDays = new Set();
     for (const s of all) {
       const k = dayKey(new Date(s.start));
-      byDay[k] = byDay[k] || { gamma: 0, relax: 0, ganz: 0 };
+      byDay[k] = byDay[k] || { gamma: 0, relax: 0, ganz: 0, focus: 0 };
       byDay[k][modeOf(s)] += s.sec;
       if (s.done) doneDays.add(k);
     }
@@ -1561,8 +1696,8 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
 
     let week = 0, maxSec = 30 * 60;
     const span = [];
-    const sum = (v) => v.gamma + v.relax + v.ganz;
-    for (let i = 13; i >= 0; i--) { const x = new Date(today); x.setDate(x.getDate() - i); const v = byDay[dayKey(x)] || { gamma: 0, relax: 0, ganz: 0 }; span.push([x, v, i]); maxSec = Math.max(maxSec, sum(v)); }
+    const sum = (v) => v.gamma + v.relax + v.ganz + v.focus;
+    for (let i = 13; i >= 0; i--) { const x = new Date(today); x.setDate(x.getDate() - i); const v = byDay[dayKey(x)] || { gamma: 0, relax: 0, ganz: 0, focus: 0 }; span.push([x, v, i]); maxSec = Math.max(maxSec, sum(v)); }
     const days = $('#days');
     days.textContent = '';
     for (const [x, v, i] of span) {
@@ -1623,6 +1758,12 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   $('#lw-alpha').setAttribute('d', wavePath(5, 5, 30, 16));
   $('#lw-theta').setAttribute('d', wavePath(3, 5.5, 30, 16));
   $('#lw-delta').setAttribute('d', wavePath(1, 6, 30, 16));
+  $('#lw-memory').setAttribute('d', wavePath(4, 5, 30, 16));
+  $('#lw-attention').setAttribute('d', wavePath(7, 5, 30, 16));
+  $('#lw-calm').setAttribute('d', wavePath(2.5, 5.5, 30, 16));
+  // Две волны чуть разной частоты — левое и правое ухо.
+  $('#waveFocusL').setAttribute('d', wavePath(9, 20, 400, 96));
+  $('#waveFocusR').setAttribute('d', wavePath(10, 20, 400, 96));
 
   const ticks = $('#ticks');
   for (let i = 0; i < 60; i++) {
@@ -1640,7 +1781,9 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   $('#gp-' + prefs.gprog).checked = true;
   $('#gn-' + prefs.gnoise).checked = true;
   $('#g' + prefs.gdur).checked = true;
-  for (const [el, key] of [[vol, 'vol'], [rvol, 'rvol'], [gvol, 'gvol'], [bright, 'bright'], [gbright, 'gbright']]) {
+  $('#fk-' + prefs.fkind).checked = true;
+  $('#f' + prefs.fdur).checked = true;
+  for (const [el, key] of [[vol, 'vol'], [rvol, 'rvol'], [gvol, 'gvol'], [fvol, 'fvol'], [bright, 'bright'], [gbright, 'gbright']]) {
     el.value = prefs[key]; $('#' + el.id + '-val').textContent = prefs[key] + '%'; fill(el);
   }
   render();
@@ -1648,6 +1791,6 @@ footer { color: var(--faint); font-size: .8rem; max-width: 70ch; }
   requestAnimationFrame(frame);
 
   // Хук для автотестов (не влияет на работу).
-  window.__g40 = { volGain, gainNow: () => gain.gain.value, S, prefs, LEVELS, SOUNDS, RKINDS, GPROGS, elapsed, lightValue, breathShape, guideAt, fadeAt, ganzColor, finish, pause, play, openMode, bufferFor, get ctx() { return ctx; }, get live() { return live; } };
+  window.__g40 = { volGain, gainNow: () => gain.gain.value, S, prefs, LEVELS, SOUNDS, RKINDS, GPROGS, FKINDS, elapsed, lightValue, breathShape, guideAt, fadeAt, ganzColor, finish, pause, play, openMode, bufferFor, get ctx() { return ctx; }, get live() { return live; } };
 })();
 </script>
